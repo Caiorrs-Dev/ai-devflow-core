@@ -5,14 +5,14 @@
 // then the project's own `.ai-flow.json` vars. Inside each layer:
 //   managed/  overwritten on every sync (the project must not edit these)
 //   seed/     written once, only when missing (the project owns them after)
-//   skills/   tool-agnostic skills synced to .agents/skills/ & symlinked in .claude/skills/
 //   blocks/   marker blocks rewritten inside CLAUDE.md
+// Third-party skills are not copied: each layer's skills.json names them by
+// source, and the `skills` CLI (npx skills) installs and locks them.
 // Text in every file is rendered with `@@dotted.var@@` placeholders. The
 // delimiter is deliberately not `{{ }}`, which GitHub Actions uses.
 
 import {
 	chmodSync,
-	cpSync,
 	existsSync,
 	lstatSync,
 	mkdirSync,
@@ -23,6 +23,7 @@ import {
 	symlinkSync,
 	writeFileSync,
 } from "node:fs";
+import { spawnSync } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -138,30 +139,6 @@ function mergeRoles(layers) {
 	return roles;
 }
 
-export function getAvailableSkills(layers = []) {
-	const skills = new Map();
-	const catalogDir = path.join(ROOT, "catalog", "skills");
-	if (existsSync(catalogDir)) {
-		for (const entry of readdirSync(catalogDir, { withFileTypes: true })) {
-			if (entry.isDirectory()) {
-				skills.set(entry.name, { sourceDir: path.join(catalogDir, entry.name), layer: "catalog" });
-			}
-		}
-	}
-	for (const layer of layers) {
-		const skillsDir = path.join(layer, "skills");
-		if (existsSync(skillsDir)) {
-			const layerName = path.basename(layer);
-			for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
-				if (entry.isDirectory()) {
-					skills.set(entry.name, { sourceDir: path.join(skillsDir, entry.name), layer: layerName });
-				}
-			}
-		}
-	}
-	return skills;
-}
-
 function wrapperFor(role) {
 	return `---
 name: ${role.name}
@@ -258,45 +235,8 @@ export function resolvePlan(projectDir) {
 		}
 	}
 
-	// Active skills: layers' skills + config.skills - config.disabledSkills
-	const allAvailableSkills = getAvailableSkills(layers);
-	const activeSkills = new Map();
-	for (const layer of layers) {
-		const skillsDir = path.join(layer, "skills");
-		if (existsSync(skillsDir)) {
-			for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
-				if (entry.isDirectory()) {
-					activeSkills.set(entry.name, path.join(skillsDir, entry.name));
-				}
-			}
-		}
-	}
-	for (const name of config.skills ?? []) {
-		if (allAvailableSkills.has(name)) {
-			activeSkills.set(name, allAvailableSkills.get(name).sourceDir);
-		}
-	}
-	for (const name of config.disabledSkills ?? []) {
-		activeSkills.delete(name);
-	}
-
-	// Symlinks map: linkRel -> expectedTarget
-	const links = new Map();
-	for (const link of INSTRUCTION_LINKS) {
-		links.set(link, INSTRUCTIONS_FILE);
-	}
-
-	// Sync skill files into .agents/skills/<name> and symlink into .claude/skills/<name>
-	for (const [skillName, skillDir] of activeSkills) {
-		for (const rel of walk(skillDir)) {
-			const targetRel = `.agents/skills/${skillName}/${rel}`;
-			const sourceFile = path.join(skillDir, rel);
-			const label = path.relative(ROOT, sourceFile);
-			const rendered = render(readFileSync(sourceFile, "utf8"), resolvedVars, label);
-			managed.set(targetRel, withManagedNote(targetRel, rendered));
-		}
-		links.set(`.claude/skills/${skillName}`, `../../.agents/skills/${skillName}`);
-	}
+	const links = new Map(INSTRUCTION_LINKS.map((link) => [link, INSTRUCTIONS_FILE]));
+	const skills = resolveSkills(layers, config);
 
 	const blocks = {};
 	for (const name of BLOCK_NAMES) {
@@ -318,7 +258,7 @@ export function resolvePlan(projectDir) {
 		links,
 		requires: mergeRequires(layers),
 		roles: [...roles.keys()].filter((name) => managed.has(`ai/agents/${name}.md`)),
-		skills: [...activeSkills.keys()],
+		skills,
 	};
 }
 
@@ -443,34 +383,94 @@ export function reconcile(projectDir, { write }) {
 		}
 	}
 
+	for (const [source, names] of missingSkills(plan.skills, path.join(projectDir, LOCK_FILE))) {
+		report.drift.push(`skills not in ${LOCK_FILE}: ${names.join(", ")} (${source}); run ai-flow skills install`);
+	}
+
 	return { plan, report };
 }
 
-export function installGlobalSkills(skillNames, { homeDir = os.homedir() } = {}) {
-	const allAvailable = getAvailableSkills([path.join(ROOT, "core")]);
-	const agentsSkillsDir = path.join(homeDir, ".agents", "skills");
-	const claudeSkillsDir = path.join(homeDir, ".claude", "skills");
-	mkdirSync(agentsSkillsDir, { recursive: true });
-	mkdirSync(claudeSkillsDir, { recursive: true });
-
-	const installed = [];
-	for (const name of skillNames) {
-		const skill = allAvailable.get(name);
-		if (!skill) {
-			console.warn(`warning: skill "${name}" not found in catalog or core skills.`);
-			continue;
+// Skills by source: `{ "<owner>/<repo>": ["skill", ...] }`. Layers merge in
+// order, then the project's `skills` adds and `disabledSkills` removes.
+export function mergeSkillMaps(...maps) {
+	const merged = new Map();
+	for (const map of maps) {
+		for (const [source, names] of Object.entries(map ?? {})) {
+			if (source.startsWith("$")) continue;
+			const set = merged.get(source) ?? new Set();
+			for (const name of names) set.add(name);
+			merged.set(source, set);
 		}
-		const destDir = path.join(agentsSkillsDir, name);
-		cpSync(skill.sourceDir, destDir, { recursive: true });
-
-		const linkPath = path.join(claudeSkillsDir, name);
-		const expectedTarget = `../../.agents/skills/${name}`;
-		if (!existsSync(linkPath) && !isSymlink(linkPath)) {
-			symlinkSync(expectedTarget, linkPath, "dir");
-		}
-		installed.push(name);
 	}
-	return installed;
+	return merged;
+}
+
+function resolveSkills(layers, config) {
+	const merged = mergeSkillMaps(
+		...layers.map((layer) => readJsonIfExists(path.join(layer, "skills.json"), {})),
+		config.skills,
+	);
+	const disabled = new Set(config.disabledSkills ?? []);
+	for (const [source, names] of merged) {
+		for (const name of disabled) names.delete(name);
+		if (names.size === 0) merged.delete(source);
+	}
+	return merged;
+}
+
+const LOCK_FILE = "skills-lock.json";
+const GLOBAL_LOCK = path.join(".agents", ".skill-lock.json");
+
+function lockedSkills(lockPath) {
+	return new Set(Object.keys(readJsonIfExists(lockPath, { skills: {} }).skills ?? {}));
+}
+
+// Skills the lock file does not list yet, grouped by source.
+export function missingSkills(skills, lockPath) {
+	const locked = lockedSkills(lockPath);
+	const missing = new Map();
+	for (const [source, names] of skills) {
+		const absent = [...names].filter((name) => !locked.has(name));
+		if (absent.length > 0) missing.set(source, absent);
+	}
+	return missing;
+}
+
+// AI_FLOW_SKILLS_CMD swaps the `skills` CLI for a stub in tests.
+function skillsCommand() {
+	return (process.env.AI_FLOW_SKILLS_CMD ?? "npx -y skills").split(" ");
+}
+
+function runSkills(args, { cwd, dryRun }) {
+	const [bin, ...base] = skillsCommand();
+	const full = [...base, ...args];
+	console.log(`${dryRun ? "would run" : "run"}: ${[bin, ...full].join(" ")}`);
+	if (dryRun) return 0;
+	const result = spawnSync(bin, full, { cwd, stdio: ["ignore", "inherit", "inherit"] });
+	if (result.error) throw result.error;
+	return result.status ?? 1;
+}
+
+function installBySource(skills, { cwd, dryRun, global }) {
+	let status = 0;
+	for (const [source, names] of skills) {
+		// --full-depth: some sources keep skills below a root SKILL.md, and the
+		// CLI stops there without it (cursor/plugins is one).
+		const args = ["add", source, ...[...names].flatMap((name) => ["-s", name]), "-y", "--full-depth"];
+		if (global) args.push("-g");
+		status ||= runSkills(args, { cwd, dryRun });
+	}
+	return status;
+}
+
+// Global skills on this machine, grouped by source, from the skills CLI lock.
+export function snapshotGlobalSkills(homeDir) {
+	const lock = readJsonIfExists(path.join(homeDir, GLOBAL_LOCK), { skills: {} });
+	const bySource = {};
+	for (const [name, entry] of Object.entries(lock.skills ?? {}).sort()) {
+		(bySource[entry.source] ??= []).push(name);
+	}
+	return Object.fromEntries(Object.entries(bySource).sort());
 }
 
 function parseArgs(argv) {
@@ -481,6 +481,8 @@ function parseArgs(argv) {
 		else if (arg === "--dir") options.dir = path.resolve(argv[++index]);
 		else if (arg === "--dry-run") options.dryRun = true;
 		else if (arg === "--home") options.home = path.resolve(argv[++index]);
+		else if (arg === "--file") options.file = path.resolve(argv[++index]);
+		else if (arg === "--out") options.out = path.resolve(argv[++index]);
 		else if (arg.startsWith("--")) throw new Error(`Unknown option: ${arg}`);
 		else options.args.push(arg);
 	}
@@ -496,6 +498,10 @@ function printReport({ report }, { dryRun }) {
 		for (const rel of report.created) console.log(`created: ${rel}`);
 		for (const rel of report.updated) console.log(`updated: ${rel}`);
 	}
+	if (!dryRun) {
+		// Sync never installs skills; say what is still missing.
+		for (const line of report.drift) if (line.startsWith("skills ")) console.warn(`warning: ${line}`);
+	}
 	for (const warning of report.warnings) console.warn(`warning: ${warning}`);
 	if (report.drift.length === 0) console.log("Up to date.");
 }
@@ -503,86 +509,118 @@ function printReport({ report }, { dryRun }) {
 const USAGE = `Usage: ai-flow <command> [options]
 
 Commands:
-  init --preset <name>       Write ${CONFIG_FILE}, then sync.
-  sync [--dry-run]            Update managed files, skills, CLAUDE.md blocks; create missing seeds.
-  check                       Exit 1 when the project drifted from the framework.
-  presets                     List the available presets.
-  skills [list]               List active project skills and available catalog skills.
-  skills add <name>           Add a skill from catalog/presets to project and sync.
-  skills remove <name>        Disable a skill in project and sync.
-  skills global [names...]    Install recommended skills into ~/.agents/skills and ~/.claude/skills.
-  vars                        Print the resolved template vars.
+  init --preset <name>              Write ${CONFIG_FILE}, then sync.
+  sync [--dry-run]                  Update managed files and CLAUDE.md blocks; create missing seeds.
+  check                             Exit 1 when the project drifted (files, blocks, skills not locked).
+  presets                           List the available presets.
+  vars                              Print the resolved template vars.
+
+Skills (third-party skills install through the \`skills\` CLI and ${LOCK_FILE}):
+  skills [list]                     Project skills by source, and which are not locked yet.
+  skills install [--dry-run]        Install project skills missing from ${LOCK_FILE}.
+  skills restore                    Fresh clone: restore every skill in ${LOCK_FILE}.
+  skills add <owner/repo> <skill...>  Add skills to ${CONFIG_FILE} and install them.
+  skills remove <skill...>          Disable skills in ${CONFIG_FILE} and uninstall them.
+  skills global [skill...]          New machine: install machine/global-skills.json globally.
+  skills snapshot [--out <file>]    Write this machine's global skills (from ~/${GLOBAL_LOCK}).
 
 Options:
-  --dir <path>                Project directory (default: current directory).
-  --home <path>               Target home directory for global skills (default: user home).`;
+  --dir <path>                      Project directory (default: current directory).
+  --home <path>                     Home directory for global skills (default: your home).
+  --file <path>                     Global skills manifest (default: machine/global-skills.json).`;
+
+function formatSkills(skills) {
+	return [...skills].map(([source, names]) => `  ${source}: ${[...names].join(", ")}`);
+}
 
 function handleSkills(options) {
-	const sub = options.args[1];
+	const sub = options.args[1] ?? "list";
 	const configPath = path.join(options.dir, CONFIG_FILE);
+	const homeDir = options.home ?? os.homedir();
+	const manifest = options.file ?? path.join(ROOT, "machine", "global-skills.json");
 
 	if (sub === "global") {
 		const names = options.args.slice(2);
-		let toInstall = names;
-		if (toInstall.length === 0) {
-			const config = existsSync(configPath) ? readJson(configPath) : {};
-			toInstall = config.recommendedGlobalSkills ?? ["caveman"];
+		const all = mergeSkillMaps(readJsonIfExists(manifest, {}).skills);
+		if (names.length > 0) {
+			for (const [source, set] of all) {
+				for (const name of set) if (!names.includes(name)) set.delete(name);
+				if (set.size === 0) all.delete(source);
+			}
 		}
-		const installed = installGlobalSkills(toInstall, { homeDir: options.home });
-		for (const name of installed) {
-			console.log(`installed global skill: ${name} (~/.agents/skills/${name} -> ~/.claude/skills/${name})`);
+		return installBySource(all, { cwd: homeDir, dryRun: options.dryRun, global: true });
+	}
+
+	if (sub === "snapshot") {
+		const snapshot = {
+			$comment:
+				"Global skills for a new machine: ai-flow skills global. Refresh with ai-flow skills snapshot --out <this file>.",
+			skills: snapshotGlobalSkills(homeDir),
+		};
+		const text = `${JSON.stringify(snapshot, null, "\t")}\n`;
+		if (options.out) {
+			writeFileSync(options.out, text);
+			console.log(`wrote: ${options.out}`);
+		} else {
+			process.stdout.write(text);
 		}
 		return 0;
 	}
 
+	if (!existsSync(configPath)) throw new Error(`${CONFIG_FILE} not found. Run init first.`);
+	const config = readJson(configPath);
+	const saveConfig = () => writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
+	const lockPath = path.join(options.dir, LOCK_FILE);
+
 	if (sub === "add") {
-		const name = options.args[2];
-		if (!name) throw new Error("skills add requires a skill name.");
-		if (!existsSync(configPath)) throw new Error(`${CONFIG_FILE} not found. Run init first.`);
-		const config = readJson(configPath);
-		config.skills = [...new Set([...(config.skills ?? []), name])];
-		config.disabledSkills = (config.disabledSkills ?? []).filter((s) => s !== name);
-		writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
-		console.log(`added skill "${name}" to ${CONFIG_FILE}`);
-		printReport(reconcile(options.dir, { write: true }), {});
-		return 0;
+		const [source, ...names] = options.args.slice(2);
+		if (!source || names.length === 0) throw new Error("usage: ai-flow skills add <owner/repo> <skill...>");
+		config.skills = Object.fromEntries(mergeSkillMaps(config.skills, { [source]: names }));
+		for (const key of Object.keys(config.skills)) config.skills[key] = [...config.skills[key]];
+		config.disabledSkills = (config.disabledSkills ?? []).filter((name) => !names.includes(name));
+		saveConfig();
+		return installBySource(new Map([[source, names]]), { cwd: options.dir, dryRun: options.dryRun });
 	}
 
 	if (sub === "remove") {
-		const name = options.args[2];
-		if (!name) throw new Error("skills remove requires a skill name.");
-		if (!existsSync(configPath)) throw new Error(`${CONFIG_FILE} not found. Run init first.`);
-		const config = readJson(configPath);
-		config.skills = (config.skills ?? []).filter((s) => s !== name);
-		config.disabledSkills = [...new Set([...(config.disabledSkills ?? []), name])];
-		writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
-		console.log(`disabled skill "${name}" in ${CONFIG_FILE}`);
-		printReport(reconcile(options.dir, { write: true }), {});
+		const names = options.args.slice(2);
+		if (names.length === 0) throw new Error("usage: ai-flow skills remove <skill...>");
+		config.disabledSkills = [...new Set([...(config.disabledSkills ?? []), ...names])];
+		saveConfig();
+		return runSkills(["remove", ...names.flatMap((name) => ["-s", name]), "-y"], {
+			cwd: options.dir,
+			dryRun: options.dryRun,
+		});
+	}
+
+	const skills = resolveSkills([path.join(ROOT, "core"), ...presetChain(config.preset)], config);
+
+	if (sub === "install") {
+		const missing = missingSkills(skills, lockPath);
+		if (missing.size === 0) {
+			console.log(`All skills are in ${LOCK_FILE}. On a fresh clone run \`ai-flow skills restore\`.`);
+			return 0;
+		}
+		return installBySource(missing, { cwd: options.dir, dryRun: options.dryRun });
+	}
+
+	if (sub === "restore") {
+		return runSkills(["experimental_install", "-y"], { cwd: options.dir, dryRun: options.dryRun });
+	}
+
+	if (sub === "list") {
+		const missing = missingSkills(skills, lockPath);
+		console.log("Project skills (core + preset + .ai-flow.json):");
+		for (const line of formatSkills(skills)) console.log(line);
+		console.log(
+			missing.size === 0
+				? `\nAll are in ${LOCK_FILE}.`
+				: `\nNot in ${LOCK_FILE} yet (run ai-flow skills install):\n${formatSkills(missing).join("\n")}`,
+		);
 		return 0;
 	}
 
-	// Default: list skills
-	const plan = existsSync(configPath) ? resolvePlan(options.dir) : null;
-	const layers = plan ? [path.join(ROOT, "core"), ...presetChain(plan.config.preset)] : [path.join(ROOT, "core")];
-	const available = getAvailableSkills(layers);
-
-	console.log("Active project skills:");
-	if (plan) {
-		for (const name of plan.skills) console.log(`  - ${name}`);
-	} else {
-		console.log("  (no project initialized)");
-	}
-
-	console.log("\nAvailable catalog skills:");
-	for (const [name, info] of available) {
-		if (info.layer === "catalog") console.log(`  - ${name}`);
-	}
-
-	console.log("\nRecommended global skills:");
-	const rec = plan?.config?.recommendedGlobalSkills ?? ["caveman"];
-	for (const name of rec) console.log(`  - ${name}`);
-
-	return 0;
+	throw new Error(`Unknown skills command: ${sub}`);
 }
 
 function main(argv) {
@@ -599,8 +637,8 @@ function main(argv) {
 				preset: options.preset,
 				vars: {},
 				disabledRoles: [],
-				skills: [],
-				recommendedGlobalSkills: ["caveman"],
+				skills: {},
+				disabledSkills: [],
 			};
 			writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
 			console.log(`created: ${CONFIG_FILE}`);

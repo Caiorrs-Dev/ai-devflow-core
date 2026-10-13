@@ -52,9 +52,9 @@ Each layer (`core/`, then each preset in the `extends` chain) has:
 
 | Folder       | Behavior on `sync`                                                                       | Examples                                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `managed/`   | Overwritten every time. Do not edit these in the project.                                | role briefs, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks               |
+| `managed/`   | Overwritten every time. Do not edit these in the project.                                | role briefs, `ship-issue`, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks |
 | `seed/`      | Written only when the file is missing; the project owns it after.                        | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows        |
-| `skills/`   | Copied to `.agents/skills/<name>/`, symlinked from `.claude/skills/<name>`. Overwritten. | `ship-issue`, `thermo-nuclear-code-quality-review`, `vitest`, `react`, `accessibility`                     |
+| `skills.json` | Names third-party skills by source; the `skills` CLI installs them and locks them.       | `cursor/plugins`, `antfu/skills`, `addyosmani/web-quality-skills`                                          |
 | `blocks/`    | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`. | `shared-core`, `stack-preset`                                                                              |
 | `roles.json` | One `.claude/agents/<role>.md` wrapper per role whose brief is synced.                   | model, tools, description                                                                                  |
 | `vars.json`  | Template values, deep-merged in layer order.                                             | commands, branches, language                                                                               |
@@ -67,46 +67,56 @@ replaces the `node-ts` `test.yml` seed, for example).
 
 ## Skills
 
-Three tiers:
+Only one skill ships as a file: `ship-issue`, the orchestrator, because it is
+ours. Everything else is third-party and is **not copied**. Each layer's
+`skills.json` names skills by source, and the [`skills`
+CLI](https://github.com/vercel-labs/skills) installs them and records exact
+versions in `skills-lock.json`:
 
-| Tier | Folder | Synced into projects |
-|------|--------|----------------------|
-| Cycle | `core/skills/` | always: `ship-issue`, `thermo-nuclear-code-quality-review` |
-| Stack | `presets/<preset>/skills/` | by preset: `node-ts` adds `vitest`, `best-practices`; `typescript-vite-firebase` adds `react`, `vite`, `accessibility`, `core-web-vitals`, `performance`, `seo`, `vercel-react-best-practices`, `web-quality-audit` |
-| Catalog | `catalog/skills/` | only when added: `caveman`, `caveman-commit`, `caveman-review`, `anti-ui-slop` |
+| Layer | `skills.json` | Skills |
+|-------|---------------|--------|
+| `core/` | `cursor/plugins` | `thermo-nuclear-code-quality-review` |
+| `presets/node-ts/` | `antfu/skills`, `addyosmani/web-quality-skills` | `vitest`, `best-practices` |
+| `presets/typescript-vite-firebase/` | `antfu/skills`, `vercel-labs/json-render`, `vercel-labs/agent-skills`, `addyosmani/web-quality-skills` | `vite`, `react`, `vercel-react-best-practices`, `accessibility`, `core-web-vitals`, `performance`, `seo`, `web-quality-audit` |
 
-`ai-flow sync` copies each active skill to `.agents/skills/<name>/` (read by
-Codex, Gemini, pi and other tools) and links `.claude/skills/<name>` to it for
-Claude Code. Commit both folders: a fresh clone then has every project skill
-with no install step. The skill files are managed, so local edits are reported
-by `ai-flow check` and overwritten by `sync`.
-
-```bash
-ai-flow skills                # active, catalog and recommended-global skills
-ai-flow skills add caveman    # add a catalog skill to this project
-ai-flow skills remove seo     # disable a preset skill in this project
-```
-
-These edit `skills` and `disabledSkills` in `.ai-flow.json`, then sync.
-`remove` does not delete files already on disk; delete
-`.agents/skills/<name>` and `.claude/skills/<name>` by hand.
-
-### New machine or new developer
-
-Personal skills that do not belong in a repository go to the home directory:
+`ai-flow` resolves core + preset + your `.ai-flow.json` into one list, then
+delegates to the `skills` CLI. Skills land in `.agents/skills/<name>/` with a
+symlink in `.claude/skills/<name>`, the layout every agent reads.
 
 ```bash
-npx github:caiorrs/ai-devflow-core skills global              # the project's recommendedGlobalSkills
-npx github:caiorrs/ai-devflow-core skills global caveman anti-ui-slop
+ai-flow skills                # resolved list, and what the lock is missing
+ai-flow skills install        # install the missing ones (writes skills-lock.json)
+ai-flow skills restore        # fresh clone: restore everything in skills-lock.json
+ai-flow skills add <owner/repo> <skill...>
+ai-flow skills remove <skill...>
 ```
 
-This copies each skill to `~/.agents/skills/<name>/` and links
-`~/.claude/skills/<name>` to it. The default list comes from
-`recommendedGlobalSkills` in `.ai-flow.json` (default `["caveman"]`). Only
-skills in `core/skills/` or `catalog/skills/` can be installed globally.
+- Commit `skills-lock.json`. Anyone who clones runs `ai-flow skills restore`
+  (or `npx skills experimental_install`) and gets the same versions.
+- `ai-flow check` exits 1 while a skill is missing from the lock; `sync` warns.
+- `add` and `remove` edit `skills` and `disabledSkills` in `.ai-flow.json` and
+  call the CLI. `remove` does not delete files already on disk.
+- `disabledSkills` switches off a preset skill without touching the preset.
+- Upstream changes reach you through `skills update`, not through this repo.
 
-To add a skill to the catalog, copy its folder into `catalog/skills/`, commit,
-and tag a new version.
+### A new machine
+
+Global skills (personal, not project) come from `machine/global-skills.json`:
+
+```bash
+ai-flow skills global                     # install every skill in that file
+ai-flow skills global caveman impeccable  # or just these
+ai-flow skills snapshot --out machine/global-skills.json   # refresh from this machine
+```
+
+`global` runs the `skills` CLI with `-g`, so skills land in
+`~/.agents/skills/` and `~/.claude/skills/`. `snapshot` reads the machine's
+`~/.agents/.skill-lock.json`, so the file only ever lists what is installed
+through the CLI.
+
+To add a skill to a layer, add its source and name to that layer's
+`skills.json`. Do not vendor the files: the upstream repo stays the source of
+truth, and the lock pins the version.
 
 ## Project configuration: `.ai-flow.json`
 
@@ -121,9 +131,8 @@ and tag a new version.
     }
   },
   "disabledRoles": ["product-owner"],
-  "skills": ["caveman"],
-  "disabledSkills": ["seo"],
-  "recommendedGlobalSkills": ["caveman", "anti-ui-slop"]
+  "skills": { "JuliusBrussee/caveman": ["caveman"] },
+  "disabledSkills": ["seo"]
 }
 ```
 
@@ -183,6 +192,8 @@ about missing scripts and dev dependencies. For `node-ts`:
   plan commit early to narrow that window.
 - The reviewer and planner use an external code-quality skill when it exists at
   `review.skillPath`; otherwise they fall back to the checklist in their brief.
+- `skills` subcommands shell out to `npx -y skills`; set `AI_FLOW_SKILLS_CMD` to
+  point at another CLI (the tests use a stub).
 
 ## Development
 
@@ -190,4 +201,4 @@ about missing scripts and dev dependencies. For `node-ts`:
 npm test   # node --test, no dependencies
 ```
 
-Version with Conventional Commits and tags (`v0.1.0`); projects pin a tag.
+Version with Conventional Commits and tags (`v0.3.0`); projects pin a tag.

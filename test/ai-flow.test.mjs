@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
 	existsSync,
+	mkdirSync,
 	mkdtempSync,
 	readFileSync,
 	readlinkSync,
@@ -17,8 +18,39 @@ import { applyBlocks, deepMerge, render } from "../bin/ai-flow.mjs";
 
 const CLI = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../bin/ai-flow.mjs");
 
-const run = (dir, ...args) =>
-	spawnSync(process.execPath, [CLI, ...args, "--dir", dir], { encoding: "utf8" });
+const run = (dir, ...args) => {
+	const options = typeof args.at(-1) === "object" ? args.pop() : {};
+	return spawnSync(process.execPath, [CLI, ...args, "--dir", dir], {
+		encoding: "utf8",
+		env: { ...process.env, ...options.env },
+	});
+};
+
+// A fake `skills` CLI: records each call as one JSON line and, for project
+// installs and removals, keeps skills-lock.json in step like the real one.
+function stubSkillsCli() {
+	const dir = mkdtempSync(path.join(tmpdir(), "ai-flow-stub-"));
+	const log = path.join(dir, "calls.jsonl");
+	const stub = path.join(dir, "skills.mjs");
+	writeFileSync(
+		stub,
+		`import { appendFileSync, existsSync, readFileSync, writeFileSync } from "node:fs";
+const args = process.argv.slice(2);
+appendFileSync(${JSON.stringify(log)}, JSON.stringify(args) + "\\n");
+if (args.includes("-g")) process.exit(0);
+const lockPath = "skills-lock.json";
+const lock = existsSync(lockPath) ? JSON.parse(readFileSync(lockPath, "utf8")) : { version: 1, skills: {} };
+const names = args.slice(args.indexOf("-s") + 1).filter((a) => !a.startsWith("-"));
+if (args[0] === "add") for (const name of names) lock.skills[name] = { source: args[1] };
+if (args[0] === "remove") for (const name of names) delete lock.skills[name];
+writeFileSync(lockPath, JSON.stringify(lock, null, 2) + "\\n");
+`,
+	);
+	return { AI_FLOW_SKILLS_CMD: `${process.execPath} ${stub}`, AI_FLOW_STUB_LOG: log };
+}
+
+const readCalls = (env) =>
+	readFileSync(env.AI_FLOW_STUB_LOG, "utf8").trim().split("\n").map((line) => JSON.parse(line));
 
 let project;
 beforeEach(() => {
@@ -82,7 +114,11 @@ describe("cli", () => {
 			assert.equal(readlinkSync(path.join(project, "AGENTS.md")), "CLAUDE.md");
 			assert.doesNotMatch(read("ai/agents/quality-gate.md"), /@@/);
 			assert.doesNotMatch(read(".github/workflows/test.yml"), /@@/);
-			assert.equal(run(project, "check").status, 0);
+			// Skills are not copied; until they are installed the lock is
+			// incomplete, so `check` reports that drift.
+			assert.match(run(project, "check").stdout, /skills not in skills-lock\.json/);
+			assert.equal(run(project, "skills", "install", { env: stubSkillsCli() }).status, 0);
+			assert.equal(run(project, "check").status, 0, `${preset}: check after install`);
 		}
 	});
 
@@ -156,50 +192,77 @@ describe("cli", () => {
 		assert.match(result.stderr, /Unknown preset "cobol"/);
 	});
 
-	it("syncs core and preset skills and maintains .claude/skills symlinks", () => {
+	it("ships ship-issue as a managed Claude skill and lists third-party skills by source", () => {
 		run(project, "init", "--preset", "typescript-vite-firebase");
-		// Core skill
-		assert.ok(existsSync(path.join(project, ".agents/skills/ship-issue/SKILL.md")));
-		assert.ok(existsSync(path.join(project, ".agents/skills/thermo-nuclear-code-quality-review/SKILL.md")));
-		assert.equal(readlinkSync(path.join(project, ".claude/skills/ship-issue")), "../../.agents/skills/ship-issue");
-		assert.equal(
-			readlinkSync(path.join(project, ".claude/skills/thermo-nuclear-code-quality-review")),
-			"../../.agents/skills/thermo-nuclear-code-quality-review",
+		assert.match(read(".claude/skills/ship-issue/SKILL.md"), /name: ship-issue/);
+		assert.doesNotMatch(read(".claude/skills/ship-issue/SKILL.md"), /@@/);
+		const list = run(project, "skills");
+		assert.match(list.stdout, /cursor\/plugins: thermo-nuclear-code-quality-review/);
+		assert.match(list.stdout, /antfu\/skills: vitest, vite/);
+		assert.match(list.stdout, /Not in skills-lock\.json yet/);
+		const check = run(project, "check");
+		assert.equal(check.status, 1);
+		assert.match(check.stdout, /skills not in skills-lock\.json: thermo-nuclear-code-quality-review \(cursor\/plugins\)/);
+	});
+
+	it("skills install runs the skills CLI per source for unlocked skills only", () => {
+		run(project, "init", "--preset", "node-ts");
+		writeFileSync(
+			path.join(project, "skills-lock.json"),
+			JSON.stringify({ version: 1, skills: { vitest: { source: "antfu/skills" } } }),
 		);
-
-		// Preset skills
-		assert.ok(existsSync(path.join(project, ".agents/skills/vitest/SKILL.md")));
-		assert.ok(existsSync(path.join(project, ".agents/skills/react/SKILL.md")));
-		assert.equal(readlinkSync(path.join(project, ".claude/skills/react")), "../../.agents/skills/react");
+		const env = stubSkillsCli();
+		const result = run(project, "skills", "install", { env });
+		assert.equal(result.status, 0, result.stderr);
+		const calls = readCalls(env);
+		assert.deepEqual(calls, [
+			["add", "cursor/plugins", "-s", "thermo-nuclear-code-quality-review", "-y", "--full-depth"],
+			["add", "addyosmani/web-quality-skills", "-s", "best-practices", "-y", "--full-depth"],
+		]);
+		assert.deepEqual(Object.keys(JSON.parse(read("skills-lock.json")).skills).sort(), [
+			"best-practices",
+			"thermo-nuclear-code-quality-review",
+			"vitest",
+		]);
 	});
 
-	it("skills add and remove manage project skills and update config", () => {
+	it("skills add and remove edit .ai-flow.json and call the skills CLI", () => {
 		run(project, "init", "--preset", "node-ts");
-		assert.ok(!existsSync(path.join(project, ".agents/skills/caveman/SKILL.md")));
-
-		// Add catalog skill
-		const addRes = run(project, "skills", "add", "caveman");
-		assert.equal(addRes.status, 0);
-		assert.ok(existsSync(path.join(project, ".agents/skills/caveman/SKILL.md")));
-		assert.equal(readlinkSync(path.join(project, ".claude/skills/caveman")), "../../.agents/skills/caveman");
-
-		// Remove skill
-		const remRes = run(project, "skills", "remove", "caveman");
-		assert.equal(remRes.status, 0);
-		const plan = run(project, "skills");
-		const activeSection = plan.stdout.split("\n\n")[0];
-		assert.doesNotMatch(activeSection, /- caveman/);
+		const env = stubSkillsCli();
+		assert.equal(run(project, "skills", "add", "JuliusBrussee/caveman", "caveman", { env }).status, 0);
+		assert.deepEqual(JSON.parse(read(".ai-flow.json")).skills, { "JuliusBrussee/caveman": ["caveman"] });
+		assert.equal(run(project, "skills", "remove", "best-practices", { env }).status, 0);
+		assert.deepEqual(JSON.parse(read(".ai-flow.json")).disabledSkills, ["best-practices"]);
+		assert.doesNotMatch(run(project, "skills").stdout, /best-practices/);
+		assert.deepEqual(readCalls(env), [
+			["add", "JuliusBrussee/caveman", "-s", "caveman", "-y", "--full-depth"],
+			["remove", "-s", "best-practices", "-y"],
+		]);
 	});
 
-	it("skills global installs recommended skills to user home", () => {
-		const fakeHome = mkdtempSync(path.join(tmpdir(), "ai-flow-home-"));
+	it("skills restore and global use the lock file and the machine manifest", () => {
+		const env = stubSkillsCli();
+		const home = mkdtempSync(path.join(tmpdir(), "ai-flow-home-"));
 		run(project, "init", "--preset", "node-ts");
-		const res = run(project, "skills", "global", "--home", fakeHome);
-		assert.equal(res.status, 0);
+		run(project, "skills", "restore", { env });
+		run(project, "skills", "global", "caveman", "impeccable", "--home", home, { env });
+		const calls = readCalls(env);
+		assert.deepEqual(calls[0], ["experimental_install", "-y"]);
+		assert.deepEqual(calls.slice(1).map((args) => args[1]).sort(), ["JuliusBrussee/caveman", "pbakaus/impeccable"]);
+		assert.ok(calls.slice(1).every((args) => args.includes("-g")));
+		rmSync(home, { recursive: true, force: true });
+	});
 
-		// Recommended global skill "caveman" installed into home
-		assert.ok(existsSync(path.join(fakeHome, ".agents/skills/caveman/SKILL.md")));
-		assert.equal(readlinkSync(path.join(fakeHome, ".claude/skills/caveman")), "../../.agents/skills/caveman");
-		rmSync(fakeHome, { recursive: true, force: true });
+	it("skills snapshot groups this machine's global skills by source", () => {
+		const home = mkdtempSync(path.join(tmpdir(), "ai-flow-home-"));
+		mkdirSync(path.join(home, ".agents"));
+		writeFileSync(
+			path.join(home, ".agents/.skill-lock.json"),
+			JSON.stringify({ skills: { b: { source: "o/r" }, a: { source: "o/r" }, c: { source: "x/y" } } }),
+		);
+		const out = path.join(home, "global.json");
+		assert.equal(run(project, "skills", "snapshot", "--home", home, "--out", out).status, 0);
+		assert.deepEqual(JSON.parse(readFileSync(out, "utf8")).skills, { "o/r": ["a", "b"], "x/y": ["c"] });
+		rmSync(home, { recursive: true, force: true });
 	});
 });

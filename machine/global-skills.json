@@ -1,0 +1,92 @@
+{
+	"$comment": "Global skills for a new machine: ai-flow skills global. Refresh from this machine with ai-flow skills snapshot --out machine/global-skills.json.",
+	"skills": {
+		"JuliusBrussee/caveman": [
+			"caveman",
+			"caveman-commit",
+			"caveman-review"
+		],
+		"addyosmani/agent-skills": [
+			"documentation-and-adrs"
+		],
+		"bytedance/deer-flow": [
+			"bootstrap"
+		],
+		"cursor/plugins": [
+			"thermo-nuclear-code-quality-review"
+		],
+		"github/awesome-copilot": [
+			"documentation-writer"
+		],
+		"mattpocock/skills": [
+			"ask-matt",
+			"batch-grill-me",
+			"claude-handoff",
+			"code-review",
+			"codebase-design",
+			"design-an-interface",
+			"diagnosing-bugs",
+			"domain-modeling",
+			"edit-article",
+			"git-guardrails-claude-code",
+			"grill-me",
+			"grill-with-docs",
+			"grilling",
+			"handoff",
+			"implement",
+			"improve-codebase-architecture",
+			"loop-me",
+			"migrate-to-shoehorn",
+			"obsidian-vault",
+			"prototype",
+			"qa",
+			"request-refactor-plan",
+			"research",
+			"resolving-merge-conflicts",
+			"scaffold-exercises",
+			"setup-matt-pocock-skills",
+			"setup-pre-commit",
+			"setup-ts-deep-modules",
+			"tdd",
+			"teach",
+			"to-questionnaire",
+			"to-spec",
+			"to-tickets",
+			"triage",
+			"ubiquitous-language",
+			"wayfinder",
+			"wizard",
+			"writing-beats",
+			"writing-fragments",
+			"writing-great-skills",
+			"writing-shape"
+		],
+		"open-pencil/skills": [
+			"open-pencil"
+		],
+		"pbakaus/impeccable": [
+			"impeccable"
+		],
+		"software-mansion/argent": [
+			"argent-android-emulator-setup",
+			"argent-create-flow",
+			"argent-device-interact",
+			"argent-ios-simulator-setup",
+			"argent-lens",
+			"argent-metro-debugger",
+			"argent-native-profiler",
+			"argent-qa-flows",
+			"argent-react-native-app-workflow",
+			"argent-react-native-optimization",
+			"argent-react-native-profiler",
+			"argent-screen-recording",
+			"argent-screenshot-diff",
+			"argent-settings-permissions",
+			"argent-test-ui-flow",
+			"argent-tv-interact"
+		],
+		"vercel-labs/skills": [
+			"find-skills"
+		]
+	}
+}
