@@ -22,24 +22,24 @@ reports drift.
 
 ```bash
 # In the project repository (Node 20+):
-npx github:<owner>/ai-devflow-core init --preset node-ts
+npx github:caiorrs/ai-devflow-core init --preset node-ts
 # later, to pull framework updates:
-npx github:<owner>/ai-devflow-core sync
+npx github:caiorrs/ai-devflow-core sync
 # in CI or before a release, to fail on drift:
-npx github:<owner>/ai-devflow-core check
+npx github:caiorrs/ai-devflow-core check
 ```
 
 Pin a version with `#v0.1.0` after the repository name. Or add it as a dev
-dependency (`"ai-devflow-core": "github:<owner>/ai-devflow-core#v0.1.0"`) and
+dependency (`"ai-devflow-core": "github:caiorrs/ai-devflow-core#v0.1.0"`) and
 call `npx ai-flow sync`.
 
 Then finish the setup the CLI cannot do (see [Repository setup](#repository-setup)).
 
 ## Presets
 
-| Preset | Extends | Adds |
-|--------|---------|------|
-| `node-ts` | — | Biome, Knip, Vitest, Husky, commitlint, release-please, gitflow workflows |
+| Preset                     | Extends   | Adds                                                                                                  |
+| -------------------------- | --------- | ----------------------------------------------------------------------------------------------------- |
+| `node-ts`                  | —         | Biome, Knip, Vitest, Husky, commitlint, release-please, gitflow workflows                             |
 | `typescript-vite-firebase` | `node-ts` | `rules-auditor` and `ui-auditor` roles, security-rules test job, a11y/tokens/analytics/sitemap duties |
 
 `ai-flow presets` lists them. A new stack (Python, Go…) is a new folder under
@@ -50,13 +50,13 @@ stays the same.
 
 Each layer (`core/`, then each preset in the `extends` chain) has:
 
-| Folder | Behavior on `sync` | Examples |
-|--------|--------------------|----------|
-| `managed/` | Overwritten every time. Do not edit these in the project. | role briefs, `ship-issue`, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks |
-| `seed/` | Written only when the file is missing; the project owns it after. | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows |
-| `blocks/` | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`. | `shared-core`, `stack-preset` |
-| `roles.json` | One `.claude/agents/<role>.md` wrapper per role whose brief is synced. | model, tools, description |
-| `vars.json` | Template values, deep-merged in layer order. | commands, branches, language |
+| Folder       | Behavior on `sync`                                                                       | Examples                                                                                                   |
+| ------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `managed/`   | Overwritten every time. Do not edit these in the project.                                | role briefs, `ship-issue`, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks |
+| `seed/`      | Written only when the file is missing; the project owns it after.                        | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows        |
+| `blocks/`    | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`. | `shared-core`, `stack-preset`                                                                              |
+| `roles.json` | One `.claude/agents/<role>.md` wrapper per role whose brief is synced.                   | model, tools, description                                                                                  |
+| `vars.json`  | Template values, deep-merged in layer order.                                             | commands, branches, language                                                                               |
 
 Managed Markdown, YAML and shell files carry a "Managed by ai-devflow-core"
 note. JSON files cannot, so `ai-flow check` is the guard.
@@ -68,15 +68,15 @@ replaces the `node-ts` `test.yml` seed, for example).
 
 ```json
 {
-	"preset": "typescript-vite-firebase",
-	"vars": {
-		"language": { "collab": "Brazilian Portuguese", "docs": "English" },
-		"release": { "packageName": "my-app" },
-		"extra": {
-			"implementerRules": "- Analytics go through `@/telemetry`.\n- Test labels follow TESTS.md."
-		}
-	},
-	"disabledRoles": ["product-owner"]
+  "preset": "typescript-vite-firebase",
+  "vars": {
+    "language": { "collab": "Brazilian Portuguese", "docs": "English" },
+    "release": { "packageName": "my-app" },
+    "extra": {
+      "implementerRules": "- Analytics go through `@/telemetry`.\n- Test labels follow TESTS.md."
+    }
+  },
+  "disabledRoles": ["product-owner"]
 }
 ```
 
@@ -95,7 +95,7 @@ The CLI does not touch `package.json`, GitHub settings or secrets. It warns
 about missing scripts and dev dependencies. For `node-ts`:
 
 1. Dev dependencies: `@biomejs/biome knip vitest husky lint-staged
-   @commitlint/cli @commitlint/config-conventional`; run `npx husky init` once
+@commitlint/cli @commitlint/config-conventional`; run `npx husky init` once
    (then `ai-flow sync` again to restore the managed hooks).
 2. Scripts: `lint` (`biome check .`), `lint:fix` (`biome check --write .`),
    `format` (`biome format --write .`), `build`, `knip`.
