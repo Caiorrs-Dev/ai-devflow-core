@@ -155,4 +155,51 @@ describe("cli", () => {
 		assert.equal(result.status, 1);
 		assert.match(result.stderr, /Unknown preset "cobol"/);
 	});
+
+	it("syncs core and preset skills and maintains .claude/skills symlinks", () => {
+		run(project, "init", "--preset", "typescript-vite-firebase");
+		// Core skill
+		assert.ok(existsSync(path.join(project, ".agents/skills/ship-issue/SKILL.md")));
+		assert.ok(existsSync(path.join(project, ".agents/skills/thermo-nuclear-code-quality-review/SKILL.md")));
+		assert.equal(readlinkSync(path.join(project, ".claude/skills/ship-issue")), "../../.agents/skills/ship-issue");
+		assert.equal(
+			readlinkSync(path.join(project, ".claude/skills/thermo-nuclear-code-quality-review")),
+			"../../.agents/skills/thermo-nuclear-code-quality-review",
+		);
+
+		// Preset skills
+		assert.ok(existsSync(path.join(project, ".agents/skills/vitest/SKILL.md")));
+		assert.ok(existsSync(path.join(project, ".agents/skills/react/SKILL.md")));
+		assert.equal(readlinkSync(path.join(project, ".claude/skills/react")), "../../.agents/skills/react");
+	});
+
+	it("skills add and remove manage project skills and update config", () => {
+		run(project, "init", "--preset", "node-ts");
+		assert.ok(!existsSync(path.join(project, ".agents/skills/caveman/SKILL.md")));
+
+		// Add catalog skill
+		const addRes = run(project, "skills", "add", "caveman");
+		assert.equal(addRes.status, 0);
+		assert.ok(existsSync(path.join(project, ".agents/skills/caveman/SKILL.md")));
+		assert.equal(readlinkSync(path.join(project, ".claude/skills/caveman")), "../../.agents/skills/caveman");
+
+		// Remove skill
+		const remRes = run(project, "skills", "remove", "caveman");
+		assert.equal(remRes.status, 0);
+		const plan = run(project, "skills");
+		const activeSection = plan.stdout.split("\n\n")[0];
+		assert.doesNotMatch(activeSection, /- caveman/);
+	});
+
+	it("skills global installs recommended skills to user home", () => {
+		const fakeHome = mkdtempSync(path.join(tmpdir(), "ai-flow-home-"));
+		run(project, "init", "--preset", "node-ts");
+		const res = run(project, "skills", "global", "--home", fakeHome);
+		assert.equal(res.status, 0);
+
+		// Recommended global skill "caveman" installed into home
+		assert.ok(existsSync(path.join(fakeHome, ".agents/skills/caveman/SKILL.md")));
+		assert.equal(readlinkSync(path.join(fakeHome, ".claude/skills/caveman")), "../../.agents/skills/caveman");
+		rmSync(fakeHome, { recursive: true, force: true });
+	});
 });

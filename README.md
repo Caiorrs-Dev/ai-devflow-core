@@ -52,8 +52,9 @@ Each layer (`core/`, then each preset in the `extends` chain) has:
 
 | Folder       | Behavior on `sync`                                                                       | Examples                                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `managed/`   | Overwritten every time. Do not edit these in the project.                                | role briefs, `ship-issue`, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks |
+| `managed/`   | Overwritten every time. Do not edit these in the project.                                | role briefs, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks               |
 | `seed/`      | Written only when the file is missing; the project owns it after.                        | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows        |
+| `skills/`   | Copied to `.agents/skills/<name>/`, symlinked from `.claude/skills/<name>`. Overwritten. | `ship-issue`, `thermo-nuclear-code-quality-review`, `vitest`, `react`, `accessibility`                     |
 | `blocks/`    | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`. | `shared-core`, `stack-preset`                                                                              |
 | `roles.json` | One `.claude/agents/<role>.md` wrapper per role whose brief is synced.                   | model, tools, description                                                                                  |
 | `vars.json`  | Template values, deep-merged in layer order.                                             | commands, branches, language                                                                               |
@@ -63,6 +64,49 @@ note. JSON files cannot, so `ai-flow check` is the guard.
 
 A later layer replaces an earlier file at the same path (the Firebase preset
 replaces the `node-ts` `test.yml` seed, for example).
+
+## Skills
+
+Three tiers:
+
+| Tier | Folder | Synced into projects |
+|------|--------|----------------------|
+| Cycle | `core/skills/` | always: `ship-issue`, `thermo-nuclear-code-quality-review` |
+| Stack | `presets/<preset>/skills/` | by preset: `node-ts` adds `vitest`, `best-practices`; `typescript-vite-firebase` adds `react`, `vite`, `accessibility`, `core-web-vitals`, `performance`, `seo`, `vercel-react-best-practices`, `web-quality-audit` |
+| Catalog | `catalog/skills/` | only when added: `caveman`, `caveman-commit`, `caveman-review`, `anti-ui-slop` |
+
+`ai-flow sync` copies each active skill to `.agents/skills/<name>/` (read by
+Codex, Gemini, pi and other tools) and links `.claude/skills/<name>` to it for
+Claude Code. Commit both folders: a fresh clone then has every project skill
+with no install step. The skill files are managed, so local edits are reported
+by `ai-flow check` and overwritten by `sync`.
+
+```bash
+ai-flow skills                # active, catalog and recommended-global skills
+ai-flow skills add caveman    # add a catalog skill to this project
+ai-flow skills remove seo     # disable a preset skill in this project
+```
+
+These edit `skills` and `disabledSkills` in `.ai-flow.json`, then sync.
+`remove` does not delete files already on disk; delete
+`.agents/skills/<name>` and `.claude/skills/<name>` by hand.
+
+### New machine or new developer
+
+Personal skills that do not belong in a repository go to the home directory:
+
+```bash
+npx github:caiorrs/ai-devflow-core skills global              # the project's recommendedGlobalSkills
+npx github:caiorrs/ai-devflow-core skills global caveman anti-ui-slop
+```
+
+This copies each skill to `~/.agents/skills/<name>/` and links
+`~/.claude/skills/<name>` to it. The default list comes from
+`recommendedGlobalSkills` in `.ai-flow.json` (default `["caveman"]`). Only
+skills in `core/skills/` or `catalog/skills/` can be installed globally.
+
+To add a skill to the catalog, copy its folder into `catalog/skills/`, commit,
+and tag a new version.
 
 ## Project configuration: `.ai-flow.json`
 
@@ -76,7 +120,10 @@ replaces the `node-ts` `test.yml` seed, for example).
       "implementerRules": "- Analytics go through `@/telemetry`.\n- Test labels follow TESTS.md."
     }
   },
-  "disabledRoles": ["product-owner"]
+  "disabledRoles": ["product-owner"],
+  "skills": ["caveman"],
+  "disabledSkills": ["seo"],
+  "recommendedGlobalSkills": ["caveman", "anti-ui-slop"]
 }
 ```
 

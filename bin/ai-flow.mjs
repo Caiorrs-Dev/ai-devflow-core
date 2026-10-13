@@ -5,12 +5,14 @@
 // then the project's own `.ai-flow.json` vars. Inside each layer:
 //   managed/  overwritten on every sync (the project must not edit these)
 //   seed/     written once, only when missing (the project owns them after)
+//   skills/   tool-agnostic skills synced to .agents/skills/ & symlinked in .claude/skills/
 //   blocks/   marker blocks rewritten inside CLAUDE.md
 // Text in every file is rendered with `@@dotted.var@@` placeholders. The
 // delimiter is deliberately not `{{ }}`, which GitHub Actions uses.
 
 import {
 	chmodSync,
+	cpSync,
 	existsSync,
 	lstatSync,
 	mkdirSync,
@@ -21,6 +23,7 @@ import {
 	symlinkSync,
 	writeFileSync,
 } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -135,6 +138,30 @@ function mergeRoles(layers) {
 	return roles;
 }
 
+export function getAvailableSkills(layers = []) {
+	const skills = new Map();
+	const catalogDir = path.join(ROOT, "catalog", "skills");
+	if (existsSync(catalogDir)) {
+		for (const entry of readdirSync(catalogDir, { withFileTypes: true })) {
+			if (entry.isDirectory()) {
+				skills.set(entry.name, { sourceDir: path.join(catalogDir, entry.name), layer: "catalog" });
+			}
+		}
+	}
+	for (const layer of layers) {
+		const skillsDir = path.join(layer, "skills");
+		if (existsSync(skillsDir)) {
+			const layerName = path.basename(layer);
+			for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
+				if (entry.isDirectory()) {
+					skills.set(entry.name, { sourceDir: path.join(skillsDir, entry.name), layer: layerName });
+				}
+			}
+		}
+	}
+	return skills;
+}
+
 function wrapperFor(role) {
 	return `---
 name: ${role.name}
@@ -231,6 +258,46 @@ export function resolvePlan(projectDir) {
 		}
 	}
 
+	// Active skills: layers' skills + config.skills - config.disabledSkills
+	const allAvailableSkills = getAvailableSkills(layers);
+	const activeSkills = new Map();
+	for (const layer of layers) {
+		const skillsDir = path.join(layer, "skills");
+		if (existsSync(skillsDir)) {
+			for (const entry of readdirSync(skillsDir, { withFileTypes: true })) {
+				if (entry.isDirectory()) {
+					activeSkills.set(entry.name, path.join(skillsDir, entry.name));
+				}
+			}
+		}
+	}
+	for (const name of config.skills ?? []) {
+		if (allAvailableSkills.has(name)) {
+			activeSkills.set(name, allAvailableSkills.get(name).sourceDir);
+		}
+	}
+	for (const name of config.disabledSkills ?? []) {
+		activeSkills.delete(name);
+	}
+
+	// Symlinks map: linkRel -> expectedTarget
+	const links = new Map();
+	for (const link of INSTRUCTION_LINKS) {
+		links.set(link, INSTRUCTIONS_FILE);
+	}
+
+	// Sync skill files into .agents/skills/<name> and symlink into .claude/skills/<name>
+	for (const [skillName, skillDir] of activeSkills) {
+		for (const rel of walk(skillDir)) {
+			const targetRel = `.agents/skills/${skillName}/${rel}`;
+			const sourceFile = path.join(skillDir, rel);
+			const label = path.relative(ROOT, sourceFile);
+			const rendered = render(readFileSync(sourceFile, "utf8"), resolvedVars, label);
+			managed.set(targetRel, withManagedNote(targetRel, rendered));
+		}
+		links.set(`.claude/skills/${skillName}`, `../../.agents/skills/${skillName}`);
+	}
+
 	const blocks = {};
 	for (const name of BLOCK_NAMES) {
 		const parts = layers
@@ -248,8 +315,10 @@ export function resolvePlan(projectDir) {
 		managed,
 		seed: collect("seed"),
 		blocks,
+		links,
 		requires: mergeRequires(layers),
 		roles: [...roles.keys()].filter((name) => managed.has(`ai/agents/${name}.md`)),
+		skills: [...activeSkills.keys()],
 	};
 }
 
@@ -280,10 +349,10 @@ function writeFile(projectDir, rel, text) {
 	if (isExecutable(rel)) chmodSync(target, 0o755);
 }
 
-function linkState(projectDir, link) {
+function linkState(projectDir, link, expectedTarget) {
 	const target = path.join(projectDir, link);
 	if (!existsSync(target) && !isSymlink(target)) return "missing";
-	if (isSymlink(target) && readlinkSync(target) === INSTRUCTIONS_FILE) return "ok";
+	if (isSymlink(target) && readlinkSync(target) === expectedTarget) return "ok";
 	return "foreign";
 }
 
@@ -356,35 +425,66 @@ export function reconcile(projectDir, { write }) {
 		}
 	}
 
-	for (const link of INSTRUCTION_LINKS) {
-		const state = linkState(projectDir, link);
+	for (const [link, expectedTarget] of plan.links) {
+		const state = linkState(projectDir, link, expectedTarget);
 		if (state === "ok") continue;
 		if (state === "foreign") {
 			report.warnings.push(
-				`${link} exists and is not a symlink to ${INSTRUCTIONS_FILE}; merge it into ${INSTRUCTIONS_FILE}, delete it, and sync again.`,
+				`${link} exists and is not a symlink to ${expectedTarget}.`,
 			);
 			continue;
 		}
-		report.drift.push(`missing symlink: ${link} -> ${INSTRUCTIONS_FILE}`);
+		report.drift.push(`missing symlink: ${link} -> ${expectedTarget}`);
 		if (write) {
-			symlinkSync(INSTRUCTIONS_FILE, path.join(projectDir, link));
-			report.created.push(`${link} -> ${INSTRUCTIONS_FILE}`);
+			const linkPath = path.join(projectDir, link);
+			mkdirSync(path.dirname(linkPath), { recursive: true });
+			symlinkSync(expectedTarget, linkPath, "dir");
+			report.created.push(`${link} -> ${expectedTarget}`);
 		}
 	}
 
 	return { plan, report };
 }
 
-function parseArgs(argv) {
-	const [command, ...rest] = argv;
-	const options = { command, dir: process.cwd() };
-	for (let index = 0; index < rest.length; index += 1) {
-		const arg = rest[index];
-		if (arg === "--preset") options.preset = rest[++index];
-		else if (arg === "--dir") options.dir = path.resolve(rest[++index]);
-		else if (arg === "--dry-run") options.dryRun = true;
-		else throw new Error(`Unknown argument: ${arg}`);
+export function installGlobalSkills(skillNames, { homeDir = os.homedir() } = {}) {
+	const allAvailable = getAvailableSkills([path.join(ROOT, "core")]);
+	const agentsSkillsDir = path.join(homeDir, ".agents", "skills");
+	const claudeSkillsDir = path.join(homeDir, ".claude", "skills");
+	mkdirSync(agentsSkillsDir, { recursive: true });
+	mkdirSync(claudeSkillsDir, { recursive: true });
+
+	const installed = [];
+	for (const name of skillNames) {
+		const skill = allAvailable.get(name);
+		if (!skill) {
+			console.warn(`warning: skill "${name}" not found in catalog or core skills.`);
+			continue;
+		}
+		const destDir = path.join(agentsSkillsDir, name);
+		cpSync(skill.sourceDir, destDir, { recursive: true });
+
+		const linkPath = path.join(claudeSkillsDir, name);
+		const expectedTarget = `../../.agents/skills/${name}`;
+		if (!existsSync(linkPath) && !isSymlink(linkPath)) {
+			symlinkSync(expectedTarget, linkPath, "dir");
+		}
+		installed.push(name);
 	}
+	return installed;
+}
+
+function parseArgs(argv) {
+	const options = { dir: process.cwd(), args: [] };
+	for (let index = 0; index < argv.length; index += 1) {
+		const arg = argv[index];
+		if (arg === "--preset") options.preset = argv[++index];
+		else if (arg === "--dir") options.dir = path.resolve(argv[++index]);
+		else if (arg === "--dry-run") options.dryRun = true;
+		else if (arg === "--home") options.home = path.resolve(argv[++index]);
+		else if (arg.startsWith("--")) throw new Error(`Unknown option: ${arg}`);
+		else options.args.push(arg);
+	}
+	options.command = options.args[0];
 	return options;
 }
 
@@ -403,14 +503,87 @@ function printReport({ report }, { dryRun }) {
 const USAGE = `Usage: ai-flow <command> [options]
 
 Commands:
-  init --preset <name>  Write ${CONFIG_FILE}, then sync.
-  sync [--dry-run]      Update managed files and CLAUDE.md blocks; create missing seeds.
-  check                 Exit 1 when the project drifted from the framework.
-  presets               List the available presets.
-  vars                  Print the resolved template vars.
+  init --preset <name>       Write ${CONFIG_FILE}, then sync.
+  sync [--dry-run]            Update managed files, skills, CLAUDE.md blocks; create missing seeds.
+  check                       Exit 1 when the project drifted from the framework.
+  presets                     List the available presets.
+  skills [list]               List active project skills and available catalog skills.
+  skills add <name>           Add a skill from catalog/presets to project and sync.
+  skills remove <name>        Disable a skill in project and sync.
+  skills global [names...]    Install recommended skills into ~/.agents/skills and ~/.claude/skills.
+  vars                        Print the resolved template vars.
 
 Options:
-  --dir <path>          Project directory (default: current directory).`;
+  --dir <path>                Project directory (default: current directory).
+  --home <path>               Target home directory for global skills (default: user home).`;
+
+function handleSkills(options) {
+	const sub = options.args[1];
+	const configPath = path.join(options.dir, CONFIG_FILE);
+
+	if (sub === "global") {
+		const names = options.args.slice(2);
+		let toInstall = names;
+		if (toInstall.length === 0) {
+			const config = existsSync(configPath) ? readJson(configPath) : {};
+			toInstall = config.recommendedGlobalSkills ?? ["caveman"];
+		}
+		const installed = installGlobalSkills(toInstall, { homeDir: options.home });
+		for (const name of installed) {
+			console.log(`installed global skill: ${name} (~/.agents/skills/${name} -> ~/.claude/skills/${name})`);
+		}
+		return 0;
+	}
+
+	if (sub === "add") {
+		const name = options.args[2];
+		if (!name) throw new Error("skills add requires a skill name.");
+		if (!existsSync(configPath)) throw new Error(`${CONFIG_FILE} not found. Run init first.`);
+		const config = readJson(configPath);
+		config.skills = [...new Set([...(config.skills ?? []), name])];
+		config.disabledSkills = (config.disabledSkills ?? []).filter((s) => s !== name);
+		writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
+		console.log(`added skill "${name}" to ${CONFIG_FILE}`);
+		printReport(reconcile(options.dir, { write: true }), {});
+		return 0;
+	}
+
+	if (sub === "remove") {
+		const name = options.args[2];
+		if (!name) throw new Error("skills remove requires a skill name.");
+		if (!existsSync(configPath)) throw new Error(`${CONFIG_FILE} not found. Run init first.`);
+		const config = readJson(configPath);
+		config.skills = (config.skills ?? []).filter((s) => s !== name);
+		config.disabledSkills = [...new Set([...(config.disabledSkills ?? []), name])];
+		writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
+		console.log(`disabled skill "${name}" in ${CONFIG_FILE}`);
+		printReport(reconcile(options.dir, { write: true }), {});
+		return 0;
+	}
+
+	// Default: list skills
+	const plan = existsSync(configPath) ? resolvePlan(options.dir) : null;
+	const layers = plan ? [path.join(ROOT, "core"), ...presetChain(plan.config.preset)] : [path.join(ROOT, "core")];
+	const available = getAvailableSkills(layers);
+
+	console.log("Active project skills:");
+	if (plan) {
+		for (const name of plan.skills) console.log(`  - ${name}`);
+	} else {
+		console.log("  (no project initialized)");
+	}
+
+	console.log("\nAvailable catalog skills:");
+	for (const [name, info] of available) {
+		if (info.layer === "catalog") console.log(`  - ${name}`);
+	}
+
+	console.log("\nRecommended global skills:");
+	const rec = plan?.config?.recommendedGlobalSkills ?? ["caveman"];
+	for (const name of rec) console.log(`  - ${name}`);
+
+	return 0;
+}
 
 function main(argv) {
 	const options = parseArgs(argv);
@@ -422,7 +595,13 @@ function main(argv) {
 				throw new Error(`${CONFIG_FILE} already exists. Edit it and run \`ai-flow sync\`.`);
 			}
 			presetChain(options.preset);
-			const config = { preset: options.preset, vars: {}, disabledRoles: [] };
+			const config = {
+				preset: options.preset,
+				vars: {},
+				disabledRoles: [],
+				skills: [],
+				recommendedGlobalSkills: ["caveman"],
+			};
 			writeFileSync(configPath, `${JSON.stringify(config, null, "\t")}\n`);
 			console.log(`created: ${CONFIG_FILE}`);
 			printReport(reconcile(options.dir, { write: true }), {});
@@ -444,6 +623,8 @@ function main(argv) {
 				console.log(`${preset.name}${parent}: ${preset.description}`);
 			}
 			return 0;
+		case "skills":
+			return handleSkills(options);
 		case "vars":
 			console.log(JSON.stringify(resolvePlan(options.dir).vars, null, 2));
 			return 0;
