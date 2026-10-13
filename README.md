@@ -152,7 +152,9 @@ about missing scripts and dev dependencies. For `node-ts`:
 
 1. Dev dependencies: `@biomejs/biome knip vitest husky lint-staged
 @commitlint/cli @commitlint/config-conventional`; run `npx husky init` once
-   (then `ai-flow sync` again to restore the managed hooks).
+   (then `ai-flow sync` again to restore the managed hooks). If your
+   `package.json` already has a `lint-staged` field, delete the seeded
+   `.lintstagedrc.json` so lint-staged reads only one config.
 2. Scripts: `lint` (`biome check .`), `lint:fix` (`biome check --write .`),
    `format` (`biome format --write .`), `build`, `knip`.
 3. Branches: create `stage` from `main` and push it.
