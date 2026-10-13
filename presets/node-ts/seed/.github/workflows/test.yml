@@ -14,6 +14,8 @@ on:
 
 permissions:
   contents: read
+  # dorny/paths-filter lists the PR files through the API.
+  pull-requests: read
 
 jobs:
   changes:
