@@ -1,0 +1,8 @@
+{
+	"extends": "node-ts",
+	"description": "React Native + TypeScript + Firebase (Firestore, Storage, Cloud Functions): adds rules auditor, UI auditor, Jest test workflow, safe area, and mobile tokens.",
+	"requires": {
+		"packageScripts": ["test"],
+		"devDependencies": []
+	}
+}
