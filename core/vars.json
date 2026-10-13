@@ -1,0 +1,26 @@
+{
+	"branches": {
+		"integration": "stage",
+		"production": "main"
+	},
+	"language": {
+		"collab": "English",
+		"docs": "English"
+	},
+	"paths": {
+		"backlog": "docs/backlog-priority-report.md",
+		"features": "FEATURES.md"
+	},
+	"testing": {
+		"e2ePolicy": "Never run E2E tests. The user runs them manually."
+	},
+	"review": {
+		"skillPath": ".agents/skills/thermo-nuclear-code-quality-review/SKILL.md"
+	},
+	"extra": {
+		"plannerTopics": "- edge cases and concurrency (transactions, retries, races).",
+		"implementerRules": "- Match the conventions of neighboring files. Do not add a new library or pattern without an ADR.",
+		"reviewerChecks": "- Tests exist for new code and assert the behavior, not the implementation.",
+		"docsDuties": "- None beyond the steps above."
+	}
+}

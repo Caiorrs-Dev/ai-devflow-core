@@ -1,0 +1,16 @@
+{
+	"commands": {
+		"testRules": "npm run test:rules",
+		"extraChecks": "if `functions/` changed, `npm --prefix functions run build`."
+	},
+	"ux": {
+		"priorityList": "docs/ux/screens-audit-priority.md",
+		"reportDir": "docs/ux"
+	},
+	"extra": {
+		"plannerTopics": "- the `firestore.rules` / `storage.rules` change each new path needs;\n- public mirrors of private data, and the backfills they need;\n- analytics events to add or change;\n- a11y (keyboard, labels, focus, contrast) and the CSS variables to use;\n- new pages: routes and sitemap entries;\n- edge cases and concurrency (transactions, batches, races).",
+		"implementerRules": "- Every user-facing change adds or updates an analytics event, and the tests assert it.\n- UI: WCAG 2.2 AA, semantic elements, labels, keyboard and focus; CSS variables for every color, spacing and layout value (no hardcoded values). Match the neighboring CSS module.\n- Match the conventions of neighboring files (schemas, forms, hooks, service modules). Do not add a new library or pattern without an ADR.",
+		"reviewerChecks": "- tests for new code; analytics for user-facing changes;\n- a11y and CSS variables instead of hardcoded values;\n- features log and sitemap updated; security rules updated, each with a comment saying why.",
+		"docsDuties": "- New pages: add the route to the sitemap files (`public/sitemap.xml` and any sitemap index the project keeps)."
+	}
+}

@@ -1,0 +1,75 @@
+name: Tests
+
+# Required status check name: "Unit Tests".
+#
+# No `paths-ignore` on the trigger: a workflow that does not run never reports
+# its check, so a required check would block docs-only PRs forever. Instead the
+# `changes` job decides, and a job skipped by its `if` reports success.
+on:
+  pull_request:
+    branches:
+      - @@branches.production@@
+      - @@branches.integration@@
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect changed paths
+    runs-on: ubuntu-latest
+    outputs:
+      unit: ${{ steps.manual.outputs.unit || steps.filter.outputs.unit }}
+    steps:
+      # A manual run has no PR diff to filter against, so run every suite.
+      - name: Force all suites on manual dispatch
+        id: manual
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "unit=true" >> "$GITHUB_OUTPUT"
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            unit:
+              - 'src/**'
+              - 'test/**'
+              - 'tests/**'
+              - 'scripts/**'
+              - 'package*.json'
+              - 'tsconfig*.json'
+              - 'vite.config.*'
+              - 'vitest.*'
+
+  unit-tests:
+    name: Unit Tests
+    needs: changes
+    # Run unless detection said 'false': a failed detection fails open.
+    if: ${{ !cancelled() && needs.changes.outputs.unit != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          # `--changed HEAD^1` needs the PR base commit.
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: @@node.version@@
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            npx vitest run --changed HEAD^1 --passWithNoTests
+          else
+            npx vitest run
+          fi

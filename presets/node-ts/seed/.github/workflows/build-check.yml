@@ -1,0 +1,41 @@
+name: Build Check
+
+# Required status check name: "Build & Type Check" (the job name, not the
+# workflow name).
+on:
+  pull_request:
+    branches:
+      - @@branches.production@@
+      - @@branches.integration@@
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: @@node.version@@
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint and format check
+        run: npm run lint
+
+      - name: Typecheck and build
+        run: npm run build
+
+      # Advisory: Knip has false positives around dynamic imports and barrels,
+      # so it annotates the run without failing it.
+      - name: Unused code (Knip, non-blocking)
+        run: npm run knip
+        continue-on-error: true

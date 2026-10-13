@@ -1,0 +1,19 @@
+{
+	"node": {
+		"version": "24"
+	},
+	"commands": {
+		"lintFix": "npm run lint:fix",
+		"format": "npm run format",
+		"lint": "npm run lint -- --diagnostic-level=error",
+		"typecheck": "npx tsc -b",
+		"test": "npx vitest run --reporter=dot",
+		"testFiles": "npx vitest run --reporter=dot <paths>",
+		"build": "npm run build",
+		"deadCode": "npm run knip",
+		"extraChecks": "none."
+	},
+	"release": {
+		"packageName": "my-app"
+	}
+}
