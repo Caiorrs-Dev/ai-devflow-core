@@ -1,0 +1,12 @@
+{
+	"antfu/skills": ["vite"],
+	"vercel-labs/json-render": ["react"],
+	"vercel-labs/agent-skills": ["vercel-react-best-practices"],
+	"addyosmani/web-quality-skills": [
+		"accessibility",
+		"core-web-vitals",
+		"performance",
+		"seo",
+		"web-quality-audit"
+	]
+}
