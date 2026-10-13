@@ -7,7 +7,7 @@
 	"bin": {
 		"ai-flow": "bin/ai-flow.mjs"
 	},
-	"files": ["bin", "core", "presets"],
+	"files": ["bin", "core", "presets", "catalog"],
 	"engines": {
 		"node": ">=20"
 	},
