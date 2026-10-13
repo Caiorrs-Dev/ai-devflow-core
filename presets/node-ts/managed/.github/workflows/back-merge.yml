@@ -47,5 +47,10 @@ jobs:
             echo "@@branches.integration@@ already contains @@branches.production@@."
             exit 0
           fi
+          # A plain promotion leaves both trees equal: nothing to bring back.
+          if git diff --quiet HEAD origin/@@branches.production@@; then
+            echo "@@branches.production@@ has no content that @@branches.integration@@ lacks."
+            exit 0
+          fi
           git merge --no-edit origin/@@branches.production@@
           git push origin HEAD:@@branches.integration@@
