@@ -22,15 +22,15 @@ reports drift.
 
 ```bash
 # In the project repository (Node 20+):
-npx github:caiorrs/ai-devflow-core init --preset node-ts
+npx github:Caiorrs-Dev/ai-devflow-core init --preset node-ts
 # later, to pull framework updates:
-npx github:caiorrs/ai-devflow-core sync
+npx github:Caiorrs-Dev/ai-devflow-core sync
 # in CI or before a release, to fail on drift:
-npx github:caiorrs/ai-devflow-core check
+npx github:Caiorrs-Dev/ai-devflow-core check
 ```
 
 Pin a version with `#v0.1.0` after the repository name. Or add it as a dev
-dependency (`"ai-devflow-core": "github:caiorrs/ai-devflow-core#v0.1.0"`) and
+dependency (`"ai-devflow-core": "github:Caiorrs-Dev/ai-devflow-core#v0.1.0"`) and
 call `npx ai-flow sync`.
 
 Then finish the setup the CLI cannot do (see [Repository setup](#repository-setup)).
