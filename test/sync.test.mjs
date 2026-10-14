@@ -9,6 +9,7 @@ import {
 	readlinkSync,
 	rmSync,
 	statSync,
+	symlinkSync,
 	writeFileSync,
 } from "node:fs";
 import path from "node:path";
@@ -235,6 +236,48 @@ describe("sync and check", () => {
 			assert.match(result.stderr, /outside the project; ignored/);
 			assert.equal(readFileSync(path.join(outside, "keep.txt"), "utf8"), "keep me\n");
 			assert.ok(Object.keys(lock().files).every((rel) => !rel.includes("..") && !path.isAbsolute(rel)));
+		} finally {
+			rmSync(outside, { recursive: true, force: true });
+		}
+	});
+
+	it("replaces a symlinked managed file instead of writing through it", (t) => {
+		const outside = tempDir("ai-flow-outside-");
+		try {
+			const victim = path.join(outside, "victim.txt");
+			writeFileSync(victim, "untouched\n");
+			run(project, "init", "--preset", "node-ts");
+			rmSync(path.join(project, "ai/agents/planner.md"));
+			try {
+				symlinkSync(victim, path.join(project, "ai/agents/planner.md"));
+			} catch {
+				t.skip("symlinks are not available");
+				return;
+			}
+			const result = run(project, "sync");
+			assert.equal(result.status, 0, result.stderr);
+			assert.equal(readFileSync(victim, "utf8"), "untouched\n");
+			assert.ok(!lstatSync(path.join(project, "ai/agents/planner.md")).isSymbolicLink());
+			assert.match(read("ai/agents/planner.md"), /# Role: planner/);
+		} finally {
+			rmSync(outside, { recursive: true, force: true });
+		}
+	});
+
+	it("refuses to write into a symlinked folder that leaves the project", (t) => {
+		const outside = tempDir("ai-flow-outside-");
+		try {
+			write(".ai-flow.json", JSON.stringify({ preset: "node-ts" }));
+			try {
+				symlinkSync(outside, path.join(project, "ai"), "dir");
+			} catch {
+				t.skip("symlinks are not available");
+				return;
+			}
+			const result = run(project, "sync");
+			assert.equal(result.status, 1);
+			assert.match(result.stderr, /refusing to write ai\/.*outside the project/);
+			assert.deepEqual(readdirSync(outside), []);
 		} finally {
 			rmSync(outside, { recursive: true, force: true });
 		}
