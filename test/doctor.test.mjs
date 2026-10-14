@@ -75,6 +75,20 @@ describe("doctor", () => {
 		assert.match(result.stderr, /fail: release-please cannot open its PR: set RELEASE_PLEASE_TOKEN/);
 	});
 
+	it("counts organization secrets shared with the repository", () => {
+		const env = stubGhCli({
+			...repoView,
+			"secret list --json name": { stdout: [] },
+			[`api repos/${REPO}/actions/organization-secrets`]: {
+				stdout: { total_count: 2, secrets: [{ name: "BACK_MERGE_TOKEN" }, { name: "RELEASE_PLEASE_TOKEN" }] },
+			},
+		});
+		const result = run(project, "doctor", { env });
+		assert.match(result.stdout, /ok: secret BACK_MERGE_TOKEN/);
+		assert.match(result.stdout, /ok: secret RELEASE_PLEASE_TOKEN/);
+		assert.doesNotMatch(result.stderr, /release-please cannot open/);
+	});
+
 	it("fails clearly without gh access", () => {
 		const result = run(project, "doctor", { env: stubGhCli({}) });
 		assert.equal(result.status, 1);
