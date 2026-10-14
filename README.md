@@ -22,7 +22,7 @@ records what it wrote in `.ai-flow.lock.json`, and reports drift.
 ## Quick start
 
 ```bash
-# In the project repository (Node 20+):
+# In the project repository (Node 22+):
 npx github:Caiorrs-Dev/ai-devflow-core#v0.3.0 init --preset node-ts
 # later, to pull framework updates (bump the tag first):
 npx github:Caiorrs-Dev/ai-devflow-core#v0.3.0 sync
