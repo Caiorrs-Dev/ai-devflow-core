@@ -163,6 +163,17 @@ describe("unifiedDiff", () => {
 	});
 
 	it("handles created files", () => {
-		assert.equal(unifiedDiff("", "x", "/dev/null", "b/f"), "--- /dev/null\n+++ b/f\n@@ -0,0 +1,1 @@\n+x");
+		assert.equal(unifiedDiff("", "x\n", "/dev/null", "b/f"), "--- /dev/null\n+++ b/f\n@@ -0,0 +1,1 @@\n+x");
+	});
+
+	it("marks a missing final newline, and shows a newline change", () => {
+		assert.equal(
+			unifiedDiff("", "x", "/dev/null", "b/f"),
+			"--- /dev/null\n+++ b/f\n@@ -0,0 +1,1 @@\n+x\n\\ No newline at end of file",
+		);
+		assert.equal(
+			unifiedDiff("a\nb", "a\nb\n", "a/f", "b/f"),
+			"--- a/f\n+++ b/f\n@@ -1,2 +1,2 @@\n a\n-b\n\\ No newline at end of file\n+b",
+		);
 	});
 });
