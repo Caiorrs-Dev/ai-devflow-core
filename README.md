@@ -23,16 +23,16 @@ records what it wrote in `.ai-flow.lock.json`, and reports drift.
 
 ```bash
 # In the project repository (Node 22+):
-npx github:Caiorrs-Dev/ai-devflow-core#v0.3.0 init --preset node-ts
+npx github:Caiorrs-Dev/ai-devflow-core#v0.5.1 init --preset node-ts # x-release-please-version
 # later, to pull framework updates (bump the tag first):
-npx github:Caiorrs-Dev/ai-devflow-core#v0.3.0 sync
+npx github:Caiorrs-Dev/ai-devflow-core#v0.5.1 sync # x-release-please-version
 # in CI or before a release, to fail on drift:
-npx github:Caiorrs-Dev/ai-devflow-core#v0.3.0 check
+npx github:Caiorrs-Dev/ai-devflow-core#v0.5.1 check # x-release-please-version
 ```
 
 Always pin a tag: an unpinned `check` compares against the latest `main`, so
 every upstream change would fail your CI until you sync. Or add it as a dev
-dependency (`"ai-devflow-core": "github:Caiorrs-Dev/ai-devflow-core#v0.3.0"`)
+dependency (`"ai-devflow-core": "github:Caiorrs-Dev/ai-devflow-core#v0.5.1"`) <!-- x-release-please-version -->
 and call `npx ai-flow sync`. `check` warns when the lock file was written by
 another version.
 
@@ -185,7 +185,12 @@ through the CLI.
 - `disabledRoles` leaves a role's brief and wrapper out; `disabledFiles` leaves
   any managed file or seed out. Managed files synced before are removed.
 - Unknown keys, and names in `disabledRoles`/`disabledFiles`/`disabledSkills`
-  that match nothing, produce warnings. The schema gives editors completion.
+  that match nothing, produce warnings. The schema gives editors completion and
+  is stricter on purpose: it rejects unknown keys, so an editor flags a typo as
+  you type. The CLI only warns, so a config written for a newer ai-flow still
+  syncs with an older one; `check --strict` fails on the warnings in CI.
+- Skill sources are `<owner>/<repo>`, and skill names use letters, digits,
+  `.`, `_` and `-` and do not start with `-`. Anything else fails the sync.
 
 Templates use `@@dotted.name@@` placeholders, so GitHub Actions `${{ }}`
 expressions pass through. An unknown var fails the sync and names the file; a
@@ -245,6 +250,21 @@ including for the actions the workflows pin by commit SHA.
 4. `AGENTS.md`/`GEMINI.md` that are not symlinks to `CLAUDE.md` produce a
    warning; merge and replace them.
 
+## Upgrading to 0.5
+
+- ai-flow needs Node 22 or later.
+- `node-base` uses `npx tsc --noEmit` as `commands.build`, because it requires
+  no build script; `node-ts` keeps `npm run build`. Briefs follow on the next
+  sync, but `build-check.yml` is a seed: a `node-base` project without a build
+  script edits its build step by hand.
+- `sync` no longer writes through symlinks. A symlink at a managed path is
+  replaced by a plain file, and a managed path inside a folder that links
+  outside the project fails the sync. Lock entries outside the project
+  (`../x`, absolute paths) are ignored with a warning.
+- `AGENTS.md` and `GEMINI.md` are not created when `CLAUDE.md` is missing. A
+  symlink 0.4.0 created to a disabled `CLAUDE.md` gets a warning; delete it.
+- Skill sources and names in `.ai-flow.json` are validated (see above).
+
 ## Upgrading from 0.3
 
 - Commit the `.ai-flow.lock.json` the first sync writes. Before it exists,
@@ -282,5 +302,5 @@ including for the actions the workflows pin by commit SHA.
 See [CONTRIBUTING.md](./CONTRIBUTING.md). `npm test` needs no install; `npm ci`
 adds Biome and TypeScript for `npm run lint` and `npm run typecheck`.
 
-Released with Conventional Commits and release-please (`v0.3.0`, …); projects
+Released with Conventional Commits and release-please (`vX.Y.Z` tags); projects
 pin a tag. Licensed under [MIT](./LICENSE).
