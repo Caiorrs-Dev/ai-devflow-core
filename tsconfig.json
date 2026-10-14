@@ -1,0 +1,17 @@
+{
+	"$comment": "Type-checks the plain-JS CLI from its JSDoc. Nothing is emitted.",
+	"compilerOptions": {
+		"target": "es2023",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"lib": ["es2023"],
+		"types": ["node"],
+		"allowJs": true,
+		"checkJs": true,
+		"noEmit": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"skipLibCheck": true
+	},
+	"include": ["bin/**/*.mjs", "lib/**/*.mjs", "scripts/**/*.mjs"]
+}
