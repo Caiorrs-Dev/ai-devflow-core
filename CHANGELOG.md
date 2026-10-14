@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.5.1](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.5.0...v0.5.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* symlink-safe sync, skill input validation and smaller fixes ([#12](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/12)) ([948d3e2](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/948d3e28e7624b3f32a784b196f6779ae5bb1c66))
+
 ## [0.5.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.4.1...v0.5.0) (2026-10-14)
 
 
