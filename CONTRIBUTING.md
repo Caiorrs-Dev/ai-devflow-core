@@ -2,6 +2,9 @@
 
 ## Setup
 
+Node 22 or later. `@types/node` follows the oldest supported Node, so `tsc`
+rejects newer runtime APIs.
+
 ```bash
 npm ci        # dev tools only: Biome, TypeScript; the CLI has no runtime dependencies
 npm test      # node --test
@@ -56,5 +59,8 @@ updates this repository's own pins; update the template pins in the same PR.
 
 ## Commits and releases
 
-Conventional Commits, squash-merged. release-please opens the release PR on
-`main`; merging it tags `vX.Y.Z`, which projects pin.
+Conventional Commits, squash-merged: the repository allows squash merges only,
+so the PR title becomes the commit release-please reads. A merge commit hides
+the PR's commits from release-please when they are older than the last
+release. release-please opens the release PR on `main`; merging it tags
+`vX.Y.Z`, which projects pin.
