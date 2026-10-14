@@ -14,14 +14,14 @@
 import { existsSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { CONFIG_FILE, newConfig, readConfig, writeConfig } from "../lib/config.mjs";
+import { CONFIG_FILE, newConfig, writeConfig } from "../lib/config.mjs";
 import { unifiedDiff } from "../lib/diff.mjs";
 import { doctor } from "../lib/doctor.mjs";
 import { isMixin, listPresets, parentsOf, presetChain } from "../lib/layers.mjs";
 import { resolvePlan } from "../lib/plan.mjs";
 import { LOCK_FILE, reconcile, toolVersion } from "../lib/reconcile.mjs";
 import { GLOBAL_LOCK, handleSkills, SKILLS_LOCK } from "../lib/skills.mjs";
-import { errorMessage } from "../lib/util.mjs";
+import { errorMessage, isPlainObject, readJson } from "../lib/util.mjs";
 
 export { applyBlocks, render } from "../lib/render.mjs";
 export { deepMerge } from "../lib/util.mjs";
@@ -140,7 +140,16 @@ function init(options) {
 	if (existsSync(configPath)) {
 		if (!options.force)
 			throw new Error(`${CONFIG_FILE} already exists. Edit it, or run init --force to change the preset.`);
-		const { config } = readConfig(options.dir);
+		// --force is how a broken config gets replaced, so a config that does
+		// not validate keeps its keys when it is an object, and is rewritten
+		// from scratch when it is not.
+		let config;
+		try {
+			config = readJson(configPath);
+		} catch (error) {
+			console.warn(`warning: ${errorMessage(error)}; writing a new ${CONFIG_FILE}.`);
+		}
+		if (!isPlainObject(config)) config = newConfig(options.preset);
 		config.preset = options.preset;
 		writeConfig(configPath, config);
 		console.log(`updated: ${CONFIG_FILE} (preset ${options.preset})`);

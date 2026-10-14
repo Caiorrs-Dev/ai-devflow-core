@@ -87,12 +87,16 @@
 			"description": "Extra third-party skills by source: { \"<owner>/<repo>\": [\"skill\", ...] }.",
 			"type": "object",
 			"propertyNames": { "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
-			"additionalProperties": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+			"additionalProperties": {
+				"type": "array",
+				"items": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$" },
+				"uniqueItems": true
+			}
 		},
 		"disabledSkills": {
 			"description": "Skills from the preset to leave out.",
 			"type": "array",
-			"items": { "type": "string" },
+			"items": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$" },
 			"uniqueItems": true
 		}
 	}

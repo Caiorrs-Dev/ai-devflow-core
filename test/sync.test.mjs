@@ -9,6 +9,7 @@ import {
 	readlinkSync,
 	rmSync,
 	statSync,
+	symlinkSync,
 	writeFileSync,
 } from "node:fs";
 import path from "node:path";
@@ -99,6 +100,19 @@ describe("init", () => {
 		assert.ok(!existsSync(path.join(project, ".claude/agents/ui-auditor.md")));
 		assert.equal(JSON.parse(read(".ai-flow.json")).preset, "node-ts");
 	});
+
+	it("--force replaces a config that is broken or names an unknown preset", () => {
+		write(".ai-flow.json", '{"preset": "gone", "vars": {"language": {"collab": "Portuguese"}}}');
+		let result = run(project, "init", "--preset", "node-ts", "--force");
+		assert.equal(result.status, 0, result.stderr);
+		assert.deepEqual(JSON.parse(read(".ai-flow.json")).vars, { language: { collab: "Portuguese" } });
+
+		write(".ai-flow.json", "{ not json");
+		result = run(project, "init", "--preset", "node-ts", "--force");
+		assert.equal(result.status, 0, result.stderr);
+		assert.match(result.stderr, /invalid JSON.*writing a new \.ai-flow\.json/);
+		assert.equal(JSON.parse(read(".ai-flow.json")).preset, "node-ts");
+	});
 });
 
 describe("presets", () => {
@@ -113,6 +127,22 @@ describe("presets", () => {
 		assert.ok(existsSync(path.join(other, ".github/workflows/rules-test.yml")));
 		assert.match(readFileSync(path.join(other, "ai/agents/planner.md"), "utf8"), /public mirrors/);
 		rmSync(other, { recursive: true, force: true });
+	});
+
+	it("runs only scripts each preset requires in build-check", () => {
+		const build = (preset) => {
+			const dir = tempDir();
+			try {
+				run(dir, "init", "--preset", preset);
+				return readFileSync(path.join(dir, ".github/workflows/build-check.yml"), "utf8");
+			} finally {
+				rmSync(dir, { recursive: true, force: true });
+			}
+		};
+		// node-base requires no build script, so it type-checks instead.
+		assert.match(build("node-base"), /run: npx tsc --noEmit/);
+		assert.match(build("react-native-firebase"), /run: npx tsc --noEmit/);
+		assert.match(build("node-ts"), /run: npm run build/);
 	});
 
 	it("gives react-native-firebase Jest, not Vitest", () => {
@@ -235,6 +265,48 @@ describe("sync and check", () => {
 			assert.match(result.stderr, /outside the project; ignored/);
 			assert.equal(readFileSync(path.join(outside, "keep.txt"), "utf8"), "keep me\n");
 			assert.ok(Object.keys(lock().files).every((rel) => !rel.includes("..") && !path.isAbsolute(rel)));
+		} finally {
+			rmSync(outside, { recursive: true, force: true });
+		}
+	});
+
+	it("replaces a symlinked managed file instead of writing through it", (t) => {
+		const outside = tempDir("ai-flow-outside-");
+		try {
+			const victim = path.join(outside, "victim.txt");
+			writeFileSync(victim, "untouched\n");
+			run(project, "init", "--preset", "node-ts");
+			rmSync(path.join(project, "ai/agents/planner.md"));
+			try {
+				symlinkSync(victim, path.join(project, "ai/agents/planner.md"));
+			} catch {
+				t.skip("symlinks are not available");
+				return;
+			}
+			const result = run(project, "sync");
+			assert.equal(result.status, 0, result.stderr);
+			assert.equal(readFileSync(victim, "utf8"), "untouched\n");
+			assert.ok(!lstatSync(path.join(project, "ai/agents/planner.md")).isSymbolicLink());
+			assert.match(read("ai/agents/planner.md"), /# Role: planner/);
+		} finally {
+			rmSync(outside, { recursive: true, force: true });
+		}
+	});
+
+	it("refuses to write into a symlinked folder that leaves the project", (t) => {
+		const outside = tempDir("ai-flow-outside-");
+		try {
+			write(".ai-flow.json", JSON.stringify({ preset: "node-ts" }));
+			try {
+				symlinkSync(outside, path.join(project, "ai"), "dir");
+			} catch {
+				t.skip("symlinks are not available");
+				return;
+			}
+			const result = run(project, "sync");
+			assert.equal(result.status, 1);
+			assert.match(result.stderr, /refusing to write ai\/.*outside the project/);
+			assert.deepEqual(readdirSync(outside), []);
 		} finally {
 			rmSync(outside, { recursive: true, force: true });
 		}

@@ -109,6 +109,19 @@ describe("validateConfig", () => {
 		);
 	});
 
+	it("rejects skill sources and names the skills CLI would misread", () => {
+		assert.throws(
+			() =>
+				validateConfig({
+					preset: "node-ts",
+					skills: { "https://evil.example/x": ["ok"], "a/b": ["-g", "fine"] },
+					disabledSkills: ["--yes"],
+				}),
+			/"https:\/\/evil\.example\/x" is not an <owner>\/<repo> source[\s\S]*"-g" is not a skill name[\s\S]*"--yes" is not a skill name/,
+		);
+		assert.deepEqual(validateConfig({ preset: "node-ts", skills: { "a/b": ["c.d_e-1"] } }), []);
+	});
+
 	it("warns about unknown keys", () => {
 		assert.deepEqual(validateConfig({ preset: "node-ts", $schema: "x", prest: 1 }), [
 			'.ai-flow.json: unknown key "prest" is ignored.',
@@ -150,6 +163,17 @@ describe("unifiedDiff", () => {
 	});
 
 	it("handles created files", () => {
-		assert.equal(unifiedDiff("", "x", "/dev/null", "b/f"), "--- /dev/null\n+++ b/f\n@@ -0,0 +1,1 @@\n+x");
+		assert.equal(unifiedDiff("", "x\n", "/dev/null", "b/f"), "--- /dev/null\n+++ b/f\n@@ -0,0 +1,1 @@\n+x");
+	});
+
+	it("marks a missing final newline, and shows a newline change", () => {
+		assert.equal(
+			unifiedDiff("", "x", "/dev/null", "b/f"),
+			"--- /dev/null\n+++ b/f\n@@ -0,0 +1,1 @@\n+x\n\\ No newline at end of file",
+		);
+		assert.equal(
+			unifiedDiff("a\nb", "a\nb\n", "a/f", "b/f"),
+			"--- a/f\n+++ b/f\n@@ -1,2 +1,2 @@\n a\n-b\n\\ No newline at end of file\n+b",
+		);
 	});
 });

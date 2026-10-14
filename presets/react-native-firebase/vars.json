@@ -2,8 +2,7 @@
 	"commands": {
 		"typecheck": "npx tsc --noEmit",
 		"test": "npm test -- --silent",
-		"testFiles": "npm test -- --silent <paths>",
-		"build": "npx tsc --noEmit"
+		"testFiles": "npm test -- --silent <paths>"
 	},
 	"lint": {
 		"includes": ["src/**", "app/**", "__tests__/**", "scripts/**", "index.js", "App.tsx", "*.config.*"]

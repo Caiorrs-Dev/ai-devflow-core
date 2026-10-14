@@ -102,6 +102,8 @@ describe("skills", () => {
 		assert.equal(result.status, 1);
 		assert.equal(read(".ai-flow.json"), before);
 		assert.match(run(project, "skills", "add", "not-a-source", "x").stderr, /not an <owner>\/<repo> source/);
+		assert.match(run(project, "skills", "add", "foo/bar", "a;b").stderr, /not skill names: "a;b"/);
+		assert.equal(read(".ai-flow.json"), before);
 	});
 
 	it("restore and global use the lock file and the machine manifest", () => {
