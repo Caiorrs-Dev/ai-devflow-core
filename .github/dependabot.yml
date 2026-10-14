@@ -6,6 +6,11 @@ updates:
       interval: weekly
     commit-message:
       prefix: build
+    ignore:
+      # Types follow the oldest supported Node (package.json engines), so newer
+      # runtime APIs fail the typecheck instead of the Node 22 users.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
