@@ -9,7 +9,7 @@
 		"typecheck": "npx tsc --noEmit",
 		"test": "npm test",
 		"testFiles": "npm test -- <paths>",
-		"build": "npm run build",
+		"build": "npx tsc --noEmit",
 		"deadCode": "npm run knip",
 		"extraChecks": "none."
 	},

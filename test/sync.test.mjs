@@ -129,6 +129,22 @@ describe("presets", () => {
 		rmSync(other, { recursive: true, force: true });
 	});
 
+	it("runs only scripts each preset requires in build-check", () => {
+		const build = (preset) => {
+			const dir = tempDir();
+			try {
+				run(dir, "init", "--preset", preset);
+				return readFileSync(path.join(dir, ".github/workflows/build-check.yml"), "utf8");
+			} finally {
+				rmSync(dir, { recursive: true, force: true });
+			}
+		};
+		// node-base requires no build script, so it type-checks instead.
+		assert.match(build("node-base"), /run: npx tsc --noEmit/);
+		assert.match(build("react-native-firebase"), /run: npx tsc --noEmit/);
+		assert.match(build("node-ts"), /run: npm run build/);
+	});
+
 	it("gives react-native-firebase Jest, not Vitest", () => {
 		run(project, "init", "--preset", "react-native-firebase");
 		const claude = read("CLAUDE.md");
