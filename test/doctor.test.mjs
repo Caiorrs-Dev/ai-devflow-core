@@ -41,6 +41,7 @@ describe("doctor", () => {
 				],
 			},
 			"secret list --json name": { stdout: [{ name: "BACK_MERGE_TOKEN" }] },
+			[`api repos/${REPO}/actions/organization-secrets`]: { stdout: { total_count: 0, secrets: [] } },
 		});
 		const result = run(project, "doctor", { env });
 		assert.equal(result.status, 0, result.stderr);
@@ -66,6 +67,7 @@ describe("doctor", () => {
 		const env = stubGhCli({
 			...repoView,
 			"secret list --json name": { stdout: [{ name: "BACK_MERGE_TOKEN" }] },
+			[`api repos/${REPO}/actions/organization-secrets`]: { stdout: { total_count: 0, secrets: [] } },
 			[`api repos/${REPO}/actions/permissions/workflow`]: {
 				stdout: { default_workflow_permissions: "read", can_approve_pull_request_reviews: false },
 			},
@@ -87,6 +89,22 @@ describe("doctor", () => {
 		assert.match(result.stdout, /ok: secret BACK_MERGE_TOKEN/);
 		assert.match(result.stdout, /ok: secret RELEASE_PLEASE_TOKEN/);
 		assert.doesNotMatch(result.stderr, /release-please cannot open/);
+	});
+
+	it("does not call a secret missing when organization secrets cannot be read", () => {
+		const env = stubGhCli({
+			...repoView,
+			"secret list --json name": { stdout: [{ name: "BACK_MERGE_TOKEN" }] },
+			[`api repos/${REPO}/actions/permissions/workflow`]: {
+				stdout: { default_workflow_permissions: "read", can_approve_pull_request_reviews: false },
+			},
+		});
+		const result = run(project, "doctor", { env });
+		assert.match(
+			result.stderr,
+			/warning: secret RELEASE_PLEASE_TOKEN is not a repository secret \(organization secrets could not be read: HTTP 404/,
+		);
+		assert.doesNotMatch(result.stderr, /is not set|release-please cannot open/);
 	});
 
 	it("fails clearly without gh access", () => {
