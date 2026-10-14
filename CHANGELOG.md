@@ -4,6 +4,15 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.4.1](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.4.0...v0.4.1) (2026-10-14)
+
+
+### Bug Fixes
+
+* **sync:** do not link AGENTS.md and GEMINI.md to a missing CLAUDE.md ([6faca3f](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/6faca3f998df5f44bd7fe68cfd0ea49527cedc38))
+* **sync:** never remove files outside the project ([28fd30f](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/28fd30f01fdc7bcddf50227ed2c55dfe7b18f647))
+* **sync:** never touch files outside the project; no links to a missing CLAUDE.md ([f46d33a](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/f46d33a24cf3b95702013729da677c63a2b33a18))
+
 ## [0.4.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.3.0...v0.4.0) (2026-10-14)
 
 
