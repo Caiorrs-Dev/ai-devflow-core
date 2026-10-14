@@ -100,6 +100,19 @@ describe("init", () => {
 		assert.ok(!existsSync(path.join(project, ".claude/agents/ui-auditor.md")));
 		assert.equal(JSON.parse(read(".ai-flow.json")).preset, "node-ts");
 	});
+
+	it("--force replaces a config that is broken or names an unknown preset", () => {
+		write(".ai-flow.json", '{"preset": "gone", "vars": {"language": {"collab": "Portuguese"}}}');
+		let result = run(project, "init", "--preset", "node-ts", "--force");
+		assert.equal(result.status, 0, result.stderr);
+		assert.deepEqual(JSON.parse(read(".ai-flow.json")).vars, { language: { collab: "Portuguese" } });
+
+		write(".ai-flow.json", "{ not json");
+		result = run(project, "init", "--preset", "node-ts", "--force");
+		assert.equal(result.status, 0, result.stderr);
+		assert.match(result.stderr, /invalid JSON.*writing a new \.ai-flow\.json/);
+		assert.equal(JSON.parse(read(".ai-flow.json")).preset, "node-ts");
+	});
 });
 
 describe("presets", () => {
