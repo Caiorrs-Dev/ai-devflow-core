@@ -62,6 +62,19 @@ describe("doctor", () => {
 		assert.match(result.stderr, /cannot list secrets/);
 	});
 
+	it("fails when release-please has no token and Actions may not open PRs", () => {
+		const env = stubGhCli({
+			...repoView,
+			"secret list --json name": { stdout: [{ name: "BACK_MERGE_TOKEN" }] },
+			[`api repos/${REPO}/actions/permissions/workflow`]: {
+				stdout: { default_workflow_permissions: "read", can_approve_pull_request_reviews: false },
+			},
+		});
+		const result = run(project, "doctor", { env });
+		assert.equal(result.status, 1);
+		assert.match(result.stderr, /fail: release-please cannot open its PR: set RELEASE_PLEASE_TOKEN/);
+	});
+
 	it("fails clearly without gh access", () => {
 		const result = run(project, "doctor", { env: stubGhCli({}) });
 		assert.equal(result.status, 1);

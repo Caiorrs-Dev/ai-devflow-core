@@ -216,7 +216,9 @@ GitHub side. For `node-ts`:
      can push only to an unprotected `stage`.
    - `RELEASE_PLEASE_TOKEN` (recommended): contents and pull-requests write.
      With the default `GITHUB_TOKEN`, release PRs run no CI, so their required
-     checks never report.
+     checks never report, and the release job fails unless **Settings >
+     Actions > General > Allow GitHub Actions to create and approve pull
+     requests** is on.
 6. Merge methods: allow squash merges for feature PRs, so the conventional PR
    title becomes the commit release-please reads, and merge commits for the
    `stage` → `main` promotion PR, so release-please sees every commit (see
