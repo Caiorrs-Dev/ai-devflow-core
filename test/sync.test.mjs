@@ -216,6 +216,50 @@ describe("sync and check", () => {
 		assert.equal(read(".github/workflows/back-merge.yml"), "mine\n");
 	});
 
+	it("ignores lock entries outside the project instead of deleting them", () => {
+		const outside = tempDir("ai-flow-outside-");
+		try {
+			writeFileSync(path.join(outside, "keep.txt"), "keep me\n");
+			const sha = createHash("sha256").update("keep me\n").digest("hex");
+			run(project, "init", "--preset", "node-ts");
+			const crafted = lock();
+			for (const rel of [
+				path.relative(project, path.join(outside, "keep.txt")).split(path.sep).join("/"),
+				path.join(outside, "keep.txt"),
+			]) {
+				crafted.files[rel] = { kind: "managed", sha256: sha };
+			}
+			write(".ai-flow.lock.json", JSON.stringify(crafted));
+			const result = run(project, "sync");
+			assert.equal(result.status, 0, result.stderr);
+			assert.match(result.stderr, /outside the project; ignored/);
+			assert.equal(readFileSync(path.join(outside, "keep.txt"), "utf8"), "keep me\n");
+			assert.ok(Object.keys(lock().files).every((rel) => !rel.includes("..") && !path.isAbsolute(rel)));
+		} finally {
+			rmSync(outside, { recursive: true, force: true });
+		}
+	});
+
+	it("creates no AGENTS.md or GEMINI.md when CLAUDE.md is disabled", () => {
+		write(".ai-flow.json", JSON.stringify({ preset: "node-ts", disabledFiles: ["CLAUDE.md"] }));
+		const result = run(project, "sync");
+		assert.equal(result.status, 0, result.stderr);
+		for (const link of ["CLAUDE.md", "AGENTS.md", "GEMINI.md"]) {
+			assert.throws(() => lstatSync(path.join(project, link)), `${link} should not exist`);
+		}
+		assert.doesNotMatch(result.stderr, /CLAUDE\.md is missing/);
+		assert.doesNotMatch(run(project, "check").stdout, /missing link/);
+	});
+
+	it("warns instead of linking when the project deleted CLAUDE.md", () => {
+		const env = { AI_FLOW_NO_SYMLINK: "1" };
+		run(project, "init", "--preset", "node-ts", { env });
+		for (const rel of ["CLAUDE.md", "AGENTS.md", "GEMINI.md"]) rmSync(path.join(project, rel));
+		const result = run(project, "sync", { env });
+		assert.match(result.stderr, /CLAUDE\.md is missing, so AGENTS\.md and GEMINI\.md are not created/);
+		assert.ok(!existsSync(path.join(project, "AGENTS.md")));
+	});
+
 	it("applies project vars and disabled roles, and removes a role disabled later", () => {
 		write(
 			".ai-flow.json",
