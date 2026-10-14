@@ -4,6 +4,17 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.5.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.4.1...v0.5.0) (2026-10-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* require Node 22 and type-check against it ([#10](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/10))
+
+### Build System
+
+* require Node 22 and type-check against it ([#10](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/10)) ([9f25644](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/9f25644fb8124dab53896263ca065e31717fb8dd))
+
 ## [0.4.1](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.4.0...v0.4.1) (2026-10-14)
 
 
