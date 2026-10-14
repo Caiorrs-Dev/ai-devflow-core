@@ -240,6 +240,26 @@ describe("sync and check", () => {
 		}
 	});
 
+	it("creates no AGENTS.md or GEMINI.md when CLAUDE.md is disabled", () => {
+		write(".ai-flow.json", JSON.stringify({ preset: "node-ts", disabledFiles: ["CLAUDE.md"] }));
+		const result = run(project, "sync");
+		assert.equal(result.status, 0, result.stderr);
+		for (const link of ["CLAUDE.md", "AGENTS.md", "GEMINI.md"]) {
+			assert.throws(() => lstatSync(path.join(project, link)), `${link} should not exist`);
+		}
+		assert.doesNotMatch(result.stderr, /CLAUDE\.md is missing/);
+		assert.doesNotMatch(run(project, "check").stdout, /missing link/);
+	});
+
+	it("warns instead of linking when the project deleted CLAUDE.md", () => {
+		const env = { AI_FLOW_NO_SYMLINK: "1" };
+		run(project, "init", "--preset", "node-ts", { env });
+		for (const rel of ["CLAUDE.md", "AGENTS.md", "GEMINI.md"]) rmSync(path.join(project, rel));
+		const result = run(project, "sync", { env });
+		assert.match(result.stderr, /CLAUDE\.md is missing, so AGENTS\.md and GEMINI\.md are not created/);
+		assert.ok(!existsSync(path.join(project, "AGENTS.md")));
+	});
+
 	it("applies project vars and disabled roles, and removes a role disabled later", () => {
 		write(
 			".ai-flow.json",
