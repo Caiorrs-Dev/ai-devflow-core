@@ -109,6 +109,19 @@ describe("validateConfig", () => {
 		);
 	});
 
+	it("rejects skill sources and names the skills CLI would misread", () => {
+		assert.throws(
+			() =>
+				validateConfig({
+					preset: "node-ts",
+					skills: { "https://evil.example/x": ["ok"], "a/b": ["-g", "fine"] },
+					disabledSkills: ["--yes"],
+				}),
+			/"https:\/\/evil\.example\/x" is not an <owner>\/<repo> source[\s\S]*"-g" is not a skill name[\s\S]*"--yes" is not a skill name/,
+		);
+		assert.deepEqual(validateConfig({ preset: "node-ts", skills: { "a/b": ["c.d_e-1"] } }), []);
+	});
+
 	it("warns about unknown keys", () => {
 		assert.deepEqual(validateConfig({ preset: "node-ts", $schema: "x", prest: 1 }), [
 			'.ai-flow.json: unknown key "prest" is ignored.',
