@@ -1,0 +1,9 @@
+{
+	"commands": {
+		"testRules": "npm run test:rules",
+		"extraChecks": "if `functions/` changed, `npm --prefix functions run build`."
+	},
+	"ci": {
+		"rulesPaths": "- 'firestore.rules'\n- 'storage.rules'\n- 'tests/rules/**'\n- 'vitest.rules.config.*'\n- 'firebase*.json'\n- 'package*.json'"
+	}
+}

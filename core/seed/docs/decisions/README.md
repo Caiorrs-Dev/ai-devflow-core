@@ -25,9 +25,13 @@ Skip it for routine code.
 - Copy [`_template.md`](./_template.md). Keep it to one screen.
 - **Status:** `Proposed`, `Accepted`, `Deprecated` or `Superseded by ADR-NNNN`.
   Never delete an ADR: supersede it and link both ways.
-- Added an ADR? Add its row to the index below.
+- Added an ADR, or changed its status? Run `scripts/ai/adr-index.sh`: it
+  rebuilds the index below from the ADR files. Do not edit the rows by hand;
+  on a merge conflict in the index, take either side and run it again.
 
 ## Index
 
+<!-- adr-index:start -->
 | ADR | Title | Status |
 |-----|-------|--------|
+<!-- adr-index:end -->

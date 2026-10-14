@@ -8,16 +8,59 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    name: CLI tests
-    runs-on: ubuntu-latest
+    name: CLI tests (${{ matrix.os }}, Node ${{ matrix.node-version }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         node-version: [20, 22, 24]
+        include:
+          - os: macos-latest
+            node-version: 24
+          - os: windows-latest
+            node-version: 24
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm test
+
+  static:
+    name: Lint, types and rendered presets
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - name: Render every preset
+        run: node scripts/render-presets.mjs rendered
+      - name: Install actionlint and shellcheck
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+        run: |
+          curl -sSL "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" | tar xz actionlint
+          sudo apt-get install -y shellcheck >/dev/null
+      - name: Lint rendered workflows, scripts and hooks
+        run: |
+          for dir in rendered/*/; do
+            echo "::group::$dir"
+            (cd "$dir" && ../../actionlint .github/workflows/*.yml)
+            shellcheck -s bash "$dir"scripts/ai/*.sh
+            shellcheck -s sh "$dir".husky/*
+            echo "::endgroup::"
+          done

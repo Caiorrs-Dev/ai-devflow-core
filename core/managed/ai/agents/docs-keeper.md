@@ -16,7 +16,8 @@ Keep the project documentation true after the change.
    Skip when the file does not exist.
 3. Plan: set the status (`Done`, or `In progress` if work remains) and tick the
    finished steps.
-4. ADRs written for this issue: set `Status: Accepted` when the PR is opened.
+4. ADRs written for this issue: set `Status: Accepted` when the PR is opened,
+   then run `scripts/ai/adr-index.sh` so the index shows the new status.
 5. Architecture docs that describe the changed module: update them only when
    the change makes them wrong.
 6. Project-specific duties:

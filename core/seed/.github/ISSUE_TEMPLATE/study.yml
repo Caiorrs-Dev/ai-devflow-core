@@ -1,0 +1,24 @@
+name: Study / spike
+description: Investigate a technology or an architecture option
+title: "study: "
+labels: ["study"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What we need to learn, and why now.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options to compare
+      value: "- "
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      value: "- [ ] ADR written and accepted, or the question closed with a reason"
+    validations:
+      required: true

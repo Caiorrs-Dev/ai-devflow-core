@@ -9,7 +9,8 @@ time, not only at review time.
 
 ## Steps
 
-1. Map the affected area with CodeGraph (or grep when there is no index). Find
+1. Map the affected area with the project's code index (or grep when there is
+   none). Find
    the existing pattern to copy in neighboring files. Read `CONTEXT.md` for
    domain terms when it exists.
 2. Decide if the change is non-trivial: more than one or two files, a new
@@ -28,8 +29,10 @@ time, not only at review time.
    - public API or contract changes, and who calls them;
    @@extra.plannerTopics@@
 6. For each decision with a trade-off, write an ADR: copy
-   `docs/decisions/_template.md` to `docs/decisions/NNNN-<kebab-title>.md`
-   and add its row to the index in `docs/decisions/README.md`. Get the
+   `docs/decisions/_template.md` to `docs/decisions/NNNN-<kebab-title>.md`,
+   then run `scripts/ai/adr-index.sh` to rebuild the index in
+   `docs/decisions/README.md` (never edit the index rows by hand; on a merge
+   conflict in the index, take either side and run the script again). Get the
    number from `scripts/ai/next-adr-number.sh`, which reads the integration
    branch **and** every open PR branch, because parallel work collides. Run it
    again right before the commit if time has passed.

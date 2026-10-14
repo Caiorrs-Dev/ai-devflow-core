@@ -7,7 +7,7 @@ craft, then either writes a report or applies surgical craft fixes.
 ## Input
 
 - Screen target: screen name, component path and styles.
-- Screen mode: `Persuade` (onboarding, conversion), `Operate` (pet management, forms),
+- Screen mode: `Persuade` (onboarding, conversion), `Operate` (data entry, forms),
   `Read` (details, timeline) or `Experience` (cards, media).
 - Execution mode: `report` (diagnose only) or `fix` (diagnose and apply craft
   fixes on a branch).
@@ -19,7 +19,7 @@ craft, then either writes a report or applies surgical craft fixes.
    and design tokens back to definitions.
 2. Technical and mobile accessibility checks:
    - touch targets at least 44×44 pt;
-   - safe area handled cleanly via ScreenWrapper or SafeAreas;
+   - safe areas handled by @@ux.safeArea@@;
    - colors and spacing use theme tokens (no hardcoded hex or magic spacing numbers);
    - interactive elements declare `accessibilityLabel` and `accessibilityRole`;
    - loading, empty, error and success states exist;

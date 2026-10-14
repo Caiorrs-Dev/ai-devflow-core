@@ -1,14 +1,8 @@
 [
 	{
-		"name": "rules-auditor",
-		"model": "opus",
-		"tools": ["Bash", "Read", "Grep", "Glob", "Edit", "mcp__codegraph__codegraph_explore"],
-		"description": "Step 5 of the issue cycle. Checks every Firestore/Storage path the change reads or writes against least privilege and private-data rules, updates the rules with a comment saying why, adds rules tests, and flags HUMAN AUDIT REQUIRED. Never deploys."
-	},
-	{
 		"name": "ui-auditor",
 		"model": "sonnet",
-		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit", "mcp__codegraph__codegraph_explore"],
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
 		"description": "On-demand UI/UX and mobile accessibility audit of one screen from the prioritized screen inventory: writes an audit report or applies surgical craft fixes (tokens, touch targets, accessibility props, safe areas). Never changes business logic or security rules."
 	}
 ]

@@ -8,6 +8,9 @@
 # @@branches.integration@@). Needs git; uses gh for open PR branches when present.
 set -euo pipefail
 
+# Paths below are relative to the repository root, wherever this runs from.
+cd "$(git rev-parse --show-toplevel)"
+
 dir="${ADR_DIR:-docs/decisions}"
 base="${INTEGRATION_BRANCH:-@@branches.integration@@}"
 max=0

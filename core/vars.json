@@ -22,5 +22,9 @@
 		"implementerRules": "- Match the conventions of neighboring files. Do not add a new library or pattern without an ADR.",
 		"reviewerChecks": "- Tests exist for new code and assert the behavior, not the implementation.",
 		"docsDuties": "- None beyond the steps above."
+	},
+	"agents": {
+		"toolRules": "- Before a broad grep or a whole-file read, use the project's code index or code-search tool when one is set up.",
+		"extraTools": []
 	}
 }

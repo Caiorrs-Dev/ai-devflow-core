@@ -1,0 +1,74 @@
+name: Security Rules Tests
+
+# Required status check name: "Security Rules Tests".
+#
+# No `paths-ignore` on the trigger: a workflow that does not run never reports
+# its check. The `changes` job decides, and a job skipped by its `if` reports
+# success.
+on:
+  pull_request:
+    branches:
+      - @@branches.production@@
+      - @@branches.integration@@
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # dorny/paths-filter lists the PR files through the API.
+  pull-requests: read
+
+concurrency:
+  group: rules-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect changed rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      rules: ${{ steps.manual.outputs.rules || steps.filter.outputs.rules }}
+    steps:
+      - name: Force the suite on manual dispatch
+        id: manual
+        if: github.event_name == 'workflow_dispatch'
+        run: echo "rules=true" >> "$GITHUB_OUTPUT"
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
+        with:
+          filters: |
+            rules:
+              @@ci.rulesPaths@@
+
+  rules-tests:
+    name: Security Rules Tests
+    needs: changes
+    # Run unless detection said 'false': a failed detection fails open.
+    if: ${{ !cancelled() && needs.changes.outputs.rules != 'false' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: @@node.version@@
+          cache: "npm"
+
+      # The Firestore emulator in firebase-tools needs JDK 21+.
+      - name: Setup Java (for the Firestore emulator)
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security-rule tests (emulator)
+        run: @@commands.testRules@@

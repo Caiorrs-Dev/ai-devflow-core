@@ -1,0 +1,99 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://raw.githubusercontent.com/Caiorrs-Dev/ai-devflow-core/main/schema/ai-flow.schema.json",
+	"title": ".ai-flow.json",
+	"description": "Project configuration for ai-devflow-core (`ai-flow sync`).",
+	"type": "object",
+	"required": ["preset"],
+	"additionalProperties": false,
+	"properties": {
+		"$schema": { "type": "string" },
+		"preset": {
+			"description": "Preset to sync. `ai-flow presets` lists them; mixins cannot be used directly.",
+			"type": "string",
+			"pattern": "^[a-z0-9][a-z0-9-]*$",
+			"examples": ["node-base", "node-ts", "typescript-vite-firebase", "react-native-firebase"]
+		},
+		"vars": {
+			"description": "Overrides for template vars, deep-merged over the preset. `ai-flow vars` prints the resolved set.",
+			"type": "object",
+			"properties": {
+				"branches": {
+					"type": "object",
+					"properties": {
+						"integration": { "type": "string", "default": "stage" },
+						"production": { "type": "string", "default": "main" }
+					}
+				},
+				"language": {
+					"type": "object",
+					"properties": {
+						"collab": { "description": "Commits, PRs, issues, review comments, test labels.", "type": "string" },
+						"docs": { "description": "Plans, ADRs, code comments.", "type": "string" }
+					}
+				},
+				"paths": {
+					"type": "object",
+					"properties": {
+						"backlog": { "type": "string" },
+						"features": { "type": "string" }
+					}
+				},
+				"agents": {
+					"type": "object",
+					"properties": {
+						"toolRules": {
+							"description": "Markdown bullets added to the shared rules of every role and to CLAUDE.md.",
+							"type": "string"
+						},
+						"extraTools": {
+							"description": "Tools added to every Claude Code subagent wrapper, for example MCP tools.",
+							"type": "array",
+							"items": { "type": "string" }
+						}
+					}
+				},
+				"release": {
+					"type": "object",
+					"properties": {
+						"packageName": { "description": "Defaults to package.json `name`.", "type": "string" }
+					}
+				},
+				"extra": {
+					"description": "Project rules injected into the role briefs (Markdown bullets).",
+					"type": "object",
+					"properties": {
+						"plannerTopics": { "type": "string" },
+						"implementerRules": { "type": "string" },
+						"reviewerChecks": { "type": "string" },
+						"docsDuties": { "type": "string" }
+					}
+				}
+			}
+		},
+		"disabledRoles": {
+			"description": "Roles whose brief and wrapper are not synced (and are removed when synced before).",
+			"type": "array",
+			"items": { "type": "string" },
+			"uniqueItems": true
+		},
+		"disabledFiles": {
+			"description": "Managed or seed paths that are not synced. Managed files synced before are removed.",
+			"type": "array",
+			"items": { "type": "string" },
+			"uniqueItems": true
+		},
+		"skills": {
+			"description": "Extra third-party skills by source: { \"<owner>/<repo>\": [\"skill\", ...] }.",
+			"type": "object",
+			"propertyNames": { "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+			"additionalProperties": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+		},
+		"disabledSkills": {
+			"description": "Skills from the preset to leave out.",
+			"type": "array",
+			"items": { "type": "string" },
+			"uniqueItems": true
+		}
+	}
+}

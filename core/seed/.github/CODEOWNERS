@@ -1,0 +1,6 @@
+# Owners are requested for review on PRs that touch their paths.
+# Uncomment and adapt. The last matching pattern wins.
+#
+# *                       @owner
+# /.github/               @owner
+# /docs/decisions/        @owner

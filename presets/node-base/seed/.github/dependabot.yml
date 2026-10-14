@@ -1,0 +1,23 @@
+# Weekly update PRs for npm packages and for the GitHub Actions the workflows
+# pin by commit SHA. PRs target the integration branch, like every change.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: @@branches.integration@@
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: build
+      prefix-development: build
+    groups:
+      dev-dependencies:
+        dependency-type: development
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: @@branches.integration@@
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci

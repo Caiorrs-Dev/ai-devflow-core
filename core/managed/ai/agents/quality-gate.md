@@ -12,8 +12,8 @@ Run in this order. Stop at the first check that fails and is not mechanical.
 4. Unit tests: `@@commands.test@@`
 5. Build: `@@commands.build@@`
 6. Dead code: `@@commands.deadCode@@` — before you remove any item it reports,
-   prove it is not used (CodeGraph callers, dynamic imports, config files,
-   scripts). When in doubt, keep it and report it.
+   prove it is not used (callers from the code index or grep, dynamic imports,
+   config files, scripts). When in doubt, keep it and report it.
 7. Extra checks for this project: @@commands.extraChecks@@
 
 ## What counts as mechanical

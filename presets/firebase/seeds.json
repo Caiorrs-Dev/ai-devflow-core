@@ -1,0 +1,6 @@
+{
+	"$comment": "Projects synced before 0.4.0 have the rules job inside test.yml; do not add a second one.",
+	".github/workflows/rules-test.yml": {
+		"skipIf": [{ "file": ".github/workflows/test.yml", "contains": "Security Rules Tests" }]
+	}
+}

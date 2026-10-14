@@ -40,9 +40,7 @@ at the end with every out-of-scope bug collected from the handoffs.
 - @@testing.e2ePolicy@@
 - Never deploy, never run migrations or backfills, never push to
   `@@branches.integration@@` or `@@branches.production@@`.
-- Prefix shell commands with `rtk` when it is installed.
-- Use CodeGraph (`codegraph explore "<query>"`) before grep or file reads when
-  `.codegraph/` exists.
+@@agents.toolRules@@
 - Keep replies lean: state, not narrative. Never paste full diffs, logs or file
   dumps; quote the decisive line and `file:line`. Keep the `HANDOFF` under ~15
   lines.

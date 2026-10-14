@@ -1,11 +1,10 @@
 {
-	"commands": {
-		"testRules": "npm run test:rules",
-		"extraChecks": "if `functions/` changed, `npm --prefix functions run build`."
-	},
 	"ux": {
 		"priorityList": "docs/ux/screens-audit-priority.md",
 		"reportDir": "docs/ux"
+	},
+	"ci": {
+		"unitPaths": "- 'src/**'\n- 'test/**'\n- 'tests/**'\n- 'functions/src/**'\n- 'functions/package*.json'\n- 'scripts/**'\n- 'package*.json'\n- 'tsconfig*.json'\n- 'vite.config.*'\n- 'vitest.*'"
 	},
 	"extra": {
 		"plannerTopics": "- the `firestore.rules` / `storage.rules` change each new path needs;\n- public mirrors of private data, and the backfills they need;\n- analytics events to add or change;\n- a11y (keyboard, labels, focus, contrast) and the CSS variables to use;\n- new pages: routes and sitemap entries;\n- edge cases and concurrency (transactions, batches, races).",

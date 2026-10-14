@@ -1,0 +1,17 @@
+{
+	"description": "Node + TypeScript groundwork with no test runner: npm, Biome 2, Knip, Husky, commitlint and release-please on a stage/main gitflow. Extend it to add one.",
+	"requires": {
+		"packageScripts": ["lint", "lint:fix", "format", "knip"],
+		"devDependencies": [
+			"@biomejs/biome",
+			"knip",
+			"typescript",
+			"husky",
+			"lint-staged",
+			"@commitlint/cli",
+			"@commitlint/config-conventional"
+		],
+		"checks": ["Build & Type Check", "Commitlint"],
+		"secrets": ["BACK_MERGE_TOKEN", "RELEASE_PLEASE_TOKEN"]
+	}
+}

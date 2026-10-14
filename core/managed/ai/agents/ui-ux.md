@@ -16,7 +16,7 @@ a spec instead of guessing.
    `ui-ux: not needed` and stop.
 2. Find the pattern to copy: the neighboring component and its styles, the
    design tokens the project already defines, existing uses of the same control
-   (CodeGraph and file reads). Match what is already there.
+   (code index and file reads). Match what is already there.
 3. Specify, per screen or component the plan touches:
    - **states** — default, loading, empty, error, success, disabled (whichever
      apply); what each shows;

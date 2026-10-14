@@ -1,0 +1,43 @@
+name: Bug
+description: Report an error or failure
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happens, and where.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      placeholder: "1. …"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Failing test, error line, `file:line`.
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      value: "- [ ] The error no longer happens, covered by a test"
+    validations:
+      required: true

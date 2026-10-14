@@ -14,25 +14,25 @@
 	{
 		"name": "planner",
 		"model": "opus",
-		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit", "mcp__codegraph__codegraph_explore"],
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
 		"description": "Step 2 of the issue cycle. Designs a change before coding: maps the affected code, applies the quality bar at design time, and writes the plan and ADRs (next free ADR number across open PRs). Never edits source code."
 	},
 	{
 		"name": "ui-ux",
 		"model": "sonnet",
-		"tools": ["Bash", "Read", "Grep", "Glob", "Edit", "mcp__codegraph__codegraph_explore"],
+		"tools": ["Bash", "Read", "Grep", "Glob", "Edit"],
 		"description": "Step 2b of the issue cycle, only for changes with a user-visible surface. Appends a UI/UX section to the plan: states, layout, a11y, copy and design tokens. Never edits source code."
 	},
 	{
 		"name": "implementer",
 		"model": "sonnet",
-		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit", "mcp__codegraph__codegraph_explore"],
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
 		"description": "Step 3 of the issue cycle. Implements an approved plan test-first in small conventional commits, or resolves PR review comments. Never pushes and never edits security rules."
 	},
 	{
 		"name": "quality-gate",
 		"model": "sonnet",
-		"tools": ["Bash", "Read", "Grep", "Glob", "Edit", "mcp__codegraph__codegraph_explore"],
+		"tools": ["Bash", "Read", "Grep", "Glob", "Edit"],
 		"description": "Step 4 of the issue cycle. Runs lint, format, typecheck, unit tests, build and dead-code scan; fixes only mechanical failures and sends anything else back to the implementer."
 	},
 	{
@@ -50,7 +50,7 @@
 	{
 		"name": "reviewer",
 		"model": "opus",
-		"tools": ["Bash", "Read", "Grep", "Glob", "mcp__codegraph__codegraph_explore"],
+		"tools": ["Bash", "Read", "Grep", "Glob"],
 		"description": "Step 8 of the issue cycle. Adversarial review of the PR against the plan, ADRs and project rules; verifies each finding and posts inline PR comments with severity. Read-only: never edits, commits or approves."
 	},
 	{

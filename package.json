@@ -3,20 +3,38 @@
 	"version": "0.3.0",
 	"private": true,
 	"description": "Shared AI development cycle (role briefs, ship-issue orchestrator, plan/ADR templates, gitflow and release workflows) synced into project repositories.",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git"
+	},
+	"homepage": "https://github.com/Caiorrs-Dev/ai-devflow-core#readme",
+	"bugs": "https://github.com/Caiorrs-Dev/ai-devflow-core/issues",
 	"type": "module",
 	"bin": {
 		"ai-flow": "bin/ai-flow.mjs"
 	},
 	"files": [
 		"bin",
+		"lib",
 		"core",
 		"presets",
-		"machine"
+		"machine",
+		"schema"
 	],
 	"engines": {
 		"node": ">=20"
 	},
 	"scripts": {
-		"test": "node --test"
+		"test": "node --test",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"typecheck": "tsc -p tsconfig.json",
+		"render": "node scripts/render-presets.mjs rendered"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.15",
+		"@types/node": "^24.0.0",
+		"typescript": "^7.0.2"
 	}
 }
