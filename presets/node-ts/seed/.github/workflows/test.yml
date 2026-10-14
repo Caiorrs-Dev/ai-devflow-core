@@ -17,10 +17,15 @@ permissions:
   # dorny/paths-filter lists the PR files through the API.
   pull-requests: read
 
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   changes:
     name: Detect changed paths
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       unit: ${{ steps.manual.outputs.unit || steps.filter.outputs.unit }}
     steps:
@@ -33,18 +38,11 @@ jobs:
       - name: Detect changed paths
         id: filter
         if: github.event_name != 'workflow_dispatch'
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@0e4a8c6effa4802afeda77dc8d303f8176d7dfad # v3.0.4
         with:
           filters: |
             unit:
-              - 'src/**'
-              - 'test/**'
-              - 'tests/**'
-              - 'scripts/**'
-              - 'package*.json'
-              - 'tsconfig*.json'
-              - 'vite.config.*'
-              - 'vitest.*'
+              @@ci.unitPaths@@
 
   unit-tests:
     name: Unit Tests
@@ -52,15 +50,16 @@ jobs:
     # Run unless detection said 'false': a failed detection fails open.
     if: ${{ !cancelled() && needs.changes.outputs.unit != 'false' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # `--changed HEAD^1` needs the PR base commit.
+          # The changed-files run diffs against HEAD^1, the PR base commit.
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: @@node.version@@
           cache: "npm"
@@ -68,10 +67,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Add a step here that writes dummy env values (for example VITE_* to
+      # .env.local) when the app reads them at import time.
+
       - name: Run unit tests
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            npx vitest run --changed HEAD^1 --passWithNoTests
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            @@commands.testChanged@@
           else
-            npx vitest run
+            @@commands.test@@
           fi

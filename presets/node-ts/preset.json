@@ -1,15 +1,9 @@
 {
-	"description": "Node + TypeScript with npm, Biome 2, Knip, Vitest, Husky, commitlint and release-please on a stage/main gitflow.",
+	"extends": "node-base",
+	"description": "Node + TypeScript with Vitest, on top of node-base (Biome 2, Knip, Husky, commitlint, release-please, stage/main gitflow).",
 	"requires": {
-		"packageScripts": ["lint", "lint:fix", "format", "build", "knip"],
-		"devDependencies": [
-			"@biomejs/biome",
-			"knip",
-			"vitest",
-			"husky",
-			"lint-staged",
-			"@commitlint/cli",
-			"@commitlint/config-conventional"
-		]
+		"packageScripts": ["build"],
+		"devDependencies": ["vitest"],
+		"checks": ["Unit Tests"]
 	}
 }

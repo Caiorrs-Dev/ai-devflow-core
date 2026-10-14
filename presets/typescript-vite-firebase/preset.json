@@ -1,8 +1,4 @@
 {
-	"extends": "node-ts",
-	"description": "Vite + React + Firebase (Firestore, Storage, Cloud Functions): adds the rules auditor, the UI auditor, security-rules tests in CI, and web-app duties (a11y, design tokens, analytics, sitemap).",
-	"requires": {
-		"packageScripts": ["test:rules"],
-		"devDependencies": ["@firebase/rules-unit-testing", "firebase-tools"]
-	}
+	"extends": ["node-ts", "firebase"],
+	"description": "Vite + React + Firebase (Firestore, Storage, Cloud Functions): node-ts with the firebase mixin, plus the UI auditor and web-app duties (a11y, design tokens, analytics, sitemap)."
 }

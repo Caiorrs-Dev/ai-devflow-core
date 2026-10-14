@@ -1,0 +1,4 @@
+{
+	"$comment": "React patterns apply to React Native components too.",
+	"vercel-labs/agent-skills": ["vercel-react-best-practices"]
+}

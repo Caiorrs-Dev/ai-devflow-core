@@ -1,0 +1,6 @@
+{
+	"$comment": "Projects synced before 0.4.0 have Markdown issue templates; do not add a form next to each.",
+	".github/ISSUE_TEMPLATE/bug.yml": { "skipIf": [{ "exists": ".github/ISSUE_TEMPLATE/bug.md" }] },
+	".github/ISSUE_TEMPLATE/feature.yml": { "skipIf": [{ "exists": ".github/ISSUE_TEMPLATE/feature.md" }] },
+	".github/ISSUE_TEMPLATE/study.yml": { "skipIf": [{ "exists": ".github/ISSUE_TEMPLATE/study.md" }] }
+}

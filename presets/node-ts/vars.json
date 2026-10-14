@@ -1,19 +1,11 @@
 {
-	"node": {
-		"version": "24"
-	},
 	"commands": {
-		"lintFix": "npm run lint:fix",
-		"format": "npm run format",
-		"lint": "npm run lint -- --diagnostic-level=error",
 		"typecheck": "npx tsc -b",
 		"test": "npx vitest run --reporter=dot",
 		"testFiles": "npx vitest run --reporter=dot <paths>",
-		"build": "npm run build",
-		"deadCode": "npm run knip",
-		"extraChecks": "none."
+		"testChanged": "npx vitest run --changed HEAD^1 --passWithNoTests --reporter=dot"
 	},
-	"release": {
-		"packageName": "my-app"
+	"ci": {
+		"unitPaths": "- 'src/**'\n- 'test/**'\n- 'tests/**'\n- 'scripts/**'\n- 'package*.json'\n- 'tsconfig*.json'\n- 'vite.config.*'\n- 'vitest.*'"
 	}
 }

@@ -1,0 +1,25 @@
+{
+	"node": {
+		"version": "24"
+	},
+	"commands": {
+		"lintFix": "npm run lint:fix",
+		"format": "npm run format",
+		"lint": "npm run lint -- --diagnostic-level=error",
+		"typecheck": "npx tsc --noEmit",
+		"test": "npm test",
+		"testFiles": "npm test -- <paths>",
+		"build": "npm run build",
+		"deadCode": "npm run knip",
+		"extraChecks": "none."
+	},
+	"lint": {
+		"includes": ["src/**", "test/**", "tests/**", "scripts/**", "*.config.*"]
+	},
+	"knip": {
+		"entry": ["src/main.ts", "src/main.tsx", "src/index.ts"]
+	},
+	"biome": {
+		"version": "2.5.15"
+	}
+}

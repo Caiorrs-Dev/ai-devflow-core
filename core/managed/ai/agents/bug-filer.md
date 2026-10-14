@@ -16,7 +16,7 @@ own branch and PR.
 2. Confirm the bug exists on `origin/@@branches.integration@@`, not only on the
    current branch. A bug the current branch introduced is not unrelated: send
    it back to the implementer.
-3. Open the issue in @@language.collab@@, using `.github/ISSUE_TEMPLATE/bug.md`
+3. Open the issue in @@language.collab@@, using the bug template in `.github/ISSUE_TEMPLATE/`
    and the style of recent issues (`gh issue list --limit 5`):
    - Title: short, with the area.
    - Body: description, how to reproduce, expected result, actual result,

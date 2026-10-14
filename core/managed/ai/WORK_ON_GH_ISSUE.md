@@ -27,4 +27,17 @@ order by reading its brief.
 Before step 1, run `product-owner` only when the input is a raw request rather
 than a filed issue.
 
+## Promoting to `@@branches.production@@`
+
+Promotion is a human decision, outside the issue cycle:
+
+1. Open a PR from `@@branches.integration@@` to `@@branches.production@@` with a
+   conventional title, for example `chore(release): promote to production`.
+2. Merge it with a **merge commit**, not a squash: release-please reads every
+   conventional commit that reaches `@@branches.production@@`, and a squash
+   would hide them behind one title.
+3. release-please opens or updates its release PR on `@@branches.production@@`.
+   Merging that PR tags the version; the back-merge workflow then brings the
+   version bump back into `@@branches.integration@@`.
+
 @@testing.e2ePolicy@@

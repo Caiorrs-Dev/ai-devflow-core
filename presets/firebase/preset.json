@@ -1,0 +1,9 @@
+{
+	"mixin": true,
+	"description": "Firebase security rules (Firestore, Storage): the rules auditor role, a security-rules test workflow on the emulator, and the rules duties. Extend it from a stack preset.",
+	"requires": {
+		"packageScripts": ["test:rules"],
+		"devDependencies": ["@firebase/rules-unit-testing", "firebase-tools"],
+		"checks": ["Security Rules Tests"]
+	}
+}

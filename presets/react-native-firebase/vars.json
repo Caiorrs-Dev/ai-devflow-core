@@ -3,17 +3,25 @@
 		"typecheck": "npx tsc --noEmit",
 		"test": "npm test -- --silent",
 		"testFiles": "npm test -- --silent <paths>",
-		"build": "npx tsc --noEmit",
-		"testRules": "npm run test:rules",
-		"extraChecks": "if `functions/` changed, `npm --prefix functions run build`."
+		"build": "npx tsc --noEmit"
+	},
+	"lint": {
+		"includes": ["src/**", "app/**", "__tests__/**", "scripts/**", "index.js", "App.tsx", "*.config.*"]
+	},
+	"knip": {
+		"entry": ["index.js", "App.tsx", "src/index.ts"]
 	},
 	"ux": {
 		"priorityList": "docs/ux/screens-audit-priority.md",
-		"reportDir": "docs/ux"
+		"reportDir": "docs/ux",
+		"safeArea": "the app's safe-area wrapper (for example `SafeAreaView` from react-native-safe-area-context)"
+	},
+	"ci": {
+		"unitPaths": "- 'src/**'\n- 'app/**'\n- '__tests__/**'\n- 'functions/src/**'\n- 'functions/package*.json'\n- 'scripts/**'\n- 'package*.json'\n- 'tsconfig*.json'\n- 'jest.config.*'\n- 'babel.config.*'"
 	},
 	"extra": {
-		"plannerTopics": "- the `firestore.rules` / `storage.rules` change each new path needs;\n- public mirrors of private data, and the backfills they need;\n- analytics events to add or change;\n- mobile accessibility (accessible, accessibilityLabel, accessibilityRole, contrast) and design tokens / theme to use;\n- safe area handling (ScreenWrapper, keyboard avoidance);\n- edge cases, offline handling, and concurrency (transactions, batches, races).",
-		"implementerRules": "- Every user-facing change adds or updates an analytics event, and the tests assert it.\n- UI: ScreenWrapper for safe areas, theme tokens for every color, spacing and typography (no hardcoded styles or magic numbers); accessible props on interactive elements.\n- Match the conventions of neighboring files (schemas, forms, hooks, service modules). Do not add a new library or pattern without an ADR.",
+		"plannerTopics": "- the `firestore.rules` / `storage.rules` change each new path needs;\n- public mirrors of private data, and the backfills they need;\n- analytics events to add or change;\n- mobile accessibility (accessible, accessibilityLabel, accessibilityRole, contrast) and the design tokens / theme to use;\n- safe areas and keyboard avoidance;\n- edge cases, offline handling, and concurrency (transactions, batches, races).",
+		"implementerRules": "- Every user-facing change adds or updates an analytics event, and the tests assert it.\n- UI: the app's safe-area wrapper on every screen; theme tokens for every color, spacing and typography (no hardcoded styles or magic numbers); accessibility props on interactive elements.\n- Match the conventions of neighboring files (schemas, forms, hooks, service modules). Do not add a new library or pattern without an ADR.",
 		"reviewerChecks": "- tests for new code; analytics for user-facing changes;\n- safe areas and design tokens instead of hardcoded values;\n- features log updated; security rules updated, each with a comment saying why.",
 		"docsDuties": "- None beyond the steps above."
 	}

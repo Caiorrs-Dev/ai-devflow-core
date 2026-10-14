@@ -1,0 +1,57 @@
+name: Back-merge @@branches.production@@ into @@branches.integration@@
+
+# release-please commits the version bump and CHANGELOG to
+# @@branches.production@@. Without this job, the next promotion PR
+# (@@branches.integration@@ -> @@branches.production@@) conflicts on those files.
+#
+# Trigger: every push to @@branches.production@@. Merging the release PR is a
+# push made by the person who merged it, so it always fires. (A `release:
+# published` trigger does not fire when release-please runs with GITHUB_TOKEN.)
+#
+# Secret BACK_MERGE_TOKEN: a PAT or GitHub App token allowed to bypass the
+# @@branches.integration@@ branch protection. Without it the job uses
+# GITHUB_TOKEN, which can push only to an unprotected branch. A push made with
+# the PAT starts the @@branches.integration@@ workflows (deploy, if any); a push
+# made with GITHUB_TOKEN does not.
+#
+# A conflicting merge fails the job instead of force-pushing.
+on:
+  push:
+    branches:
+      - @@branches.production@@
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: back-merge-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  back-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: @@branches.integration@@
+          fetch-depth: 0
+          token: ${{ secrets.BACK_MERGE_TOKEN || github.token }}
+
+      - name: Merge @@branches.production@@ into @@branches.integration@@
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin @@branches.production@@
+          if git merge-base --is-ancestor origin/@@branches.production@@ HEAD; then
+            echo "@@branches.integration@@ already contains @@branches.production@@."
+            exit 0
+          fi
+          # A plain promotion leaves both trees equal: nothing to bring back.
+          if git diff --quiet HEAD origin/@@branches.production@@; then
+            echo "@@branches.production@@ has no content that @@branches.integration@@ lacks."
+            exit 0
+          fi
+          git merge --no-edit origin/@@branches.production@@
+          git push origin HEAD:@@branches.integration@@
