@@ -180,6 +180,13 @@ through the CLI.
   Multi-line values placed alone on an indented line keep that indentation;
   arrays render as JSON. `project.name` and `project.version` come from
   `package.json`, and `release.packageName` defaults to the name.
+- `commands.*` are rendered into the workflows' `run:` steps, so they must use
+  the package manager those workflows install with (`npm` in every shipped
+  preset). A project on yarn/pnpm either matches its commands to the install
+  step or changes the workflow to install with that manager. `check` warns on
+  the mismatch — and a bare `yarn`/`pnpm` needs `corepack enable` on the runner
+  once `package.json` declares `packageManager`, or the step fails before the
+  script starts.
 - `agents.toolRules` and `agents.extraTools` add your own tooling (a shell
   prefix, a code index, MCP tools) to every role. The defaults name no tool.
 - `disabledRoles` leaves a role's brief and wrapper out; `disabledFiles` leaves

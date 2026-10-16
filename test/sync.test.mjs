@@ -419,6 +419,45 @@ describe("sync and check", () => {
 		assert.match(report.warnings.join("\n"), /AGENTS\.md exists and is not a symlink/);
 	});
 
+	it("warns when commands.* and a workflow's install step use different package managers", () => {
+		run(project, "init", "--preset", "react-native-firebase");
+		const config = JSON.parse(read(".ai-flow.json"));
+		config.vars = { commands: { test: "yarn test --silent" } };
+		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
+		// The seeded workflow still holds the command from `init`, so this is the
+		// "a re-seed would mix managers" case.
+		assert.match(
+			run(project, "check").stderr,
+			/commands\.test runs "yarn" but .*test\.yml installs with "npm": the workflow does not run this command today/,
+		);
+	});
+
+	it("warns that CI installs one manager and runs another when the workflow runs the command", () => {
+		run(project, "init", "--preset", "react-native-firebase");
+		const config = JSON.parse(read(".ai-flow.json"));
+		config.vars = { commands: { test: "yarn test --silent" } };
+		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
+		write(
+			".github/workflows/test.yml",
+			read(".github/workflows/test.yml").replace("npm test -- --silent", "yarn test --silent"),
+		);
+		assert.match(run(project, "check").stderr, /the CI would install one package manager and run another/);
+	});
+
+	it("names corepack when packageManager pins the manager the command uses", () => {
+		run(project, "init", "--preset", "react-native-firebase");
+		const config = JSON.parse(read(".ai-flow.json"));
+		config.vars = { commands: { test: "yarn test --silent" } };
+		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
+		write("package.json", `${JSON.stringify({ name: "x", packageManager: "yarn@4.18.0" }, null, "	")}\n`);
+		assert.match(run(project, "check").stderr, /also needs corepack enabled on the runner/);
+	});
+
+	it("stays quiet when commands.* use the manager the workflows install with", () => {
+		run(project, "init", "--preset", "react-native-firebase");
+		assert.doesNotMatch(run(project, "check").stderr, /commands\.[a-zA-Z]+ runs/);
+	});
+
 	it("writes copies instead of symlinks when symlinks are unavailable, and refreshes them", () => {
 		const env = { AI_FLOW_NO_SYMLINK: "1" };
 		run(project, "init", "--preset", "node-ts", { env });
