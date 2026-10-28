@@ -61,16 +61,16 @@ and verify it with `ai-flow doctor`.
 
 ## Presets
 
-| Preset                     | Extends               | Adds                                                                                       |
-| -------------------------- | --------------------- | ------------------------------------------------------------------------------------------ |
-| `node-base`                | —                     | Biome, Knip, Husky, commitlint, release-please, gitflow workflows, Dependabot; no test runner |
-| `node-ts`                  | `node-base`           | Vitest and `@vitest/coverage-v8`, the `Unit Tests` workflow (coverage on integration pushes) |
-| `typescript-vite-firebase` | `node-ts`, `firebase` | `ui-auditor` role, a11y/tokens/analytics/sitemap duties                                    |
-| `react-native-firebase`    | `node-base`, `firebase` | Jest and its `Unit Tests` workflow, `ui-auditor` role, safe areas and mobile tokens      |
+| Preset                     | Extends                 | Adds                                                                                          |
+| -------------------------- | ----------------------- | --------------------------------------------------------------------------------------------- |
+| `node-base`                | —                       | Biome, Knip, Husky, commitlint, release-please, gitflow workflows, Dependabot; no test runner |
+| `node-ts`                  | `node-base`             | Vitest and `@vitest/coverage-v8`, the `Unit Tests` workflow (coverage on integration pushes)  |
+| `typescript-vite-firebase` | `node-ts`, `firebase`   | `ui-auditor` role, a11y/tokens/analytics/sitemap duties                                       |
+| `react-native-firebase`    | `node-base`, `firebase` | Jest and its `Unit Tests` workflow, `ui-auditor` role, safe areas and mobile tokens           |
 
-| Mixin      | Adds                                                                       |
-| ---------- | -------------------------------------------------------------------------- |
-| `firebase` | `rules-auditor` role, the `Security Rules Tests` workflow, the rules duties |
+| Mixin      | Adds                                                                               |
+| ---------- | ---------------------------------------------------------------------------------- |
+| `firebase` | `rules-auditor` role, the `Security Rules Tests` workflow, the rules duties        |
 | `egm`      | The 7 upstream EGM skills and 9 stateless reviewer roles (Elephant-Goldfish Model) |
 
 `ai-flow presets` lists them. A preset's `extends` takes one name or a list; a
@@ -85,15 +85,15 @@ preset. A project opts into a mixin with `"extends"` in `.ai-flow.json` (see
 Each layer (`core/`, then each preset in the `extends` graph, parents first)
 has:
 
-| Folder or file | Behavior on `sync`                                                                       | Examples                                                                                                   |
-| -------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `managed/`     | Overwritten every time; removed when no longer part of the plan. Do not edit in place.   | role briefs, `ship-issue`, the ADR template, commitlint/release-please/back-merge workflows, Husky hooks |
-| `seed/`        | Written once. The project owns it after, and a seed the project deletes stays deleted.   | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows        |
-| `blocks/`      | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`; layers append in order. | `shared-core`, `stack-preset`                                                    |
-| `roles.json`   | One `.claude/agents/<role>.md` wrapper per role whose brief is synced.                   | model, tools, description                                                                                  |
-| `vars.json`    | Template values, deep-merged in layer order.                                             | commands, branches, language                                                                               |
-| `skills.json`  | Names third-party skills by source; the `skills` CLI installs and locks them.            | `cursor/plugins`, `antfu/skills`                                                                           |
-| `seeds.json`   | Skip a seed when the project already has an older equivalent.                            | issue forms next to old `.md` templates                                                                    |
+| Folder or file | Behavior on `sync`                                                                                               | Examples                                                                                                 |
+| -------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `managed/`     | Overwritten every time; removed when no longer part of the plan. Do not edit in place.                           | role briefs, `ship-issue`, the ADR template, commitlint/release-please/back-merge workflows, Husky hooks |
+| `seed/`        | Written once. The project owns it after, and a seed the project deletes stays deleted.                           | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows      |
+| `blocks/`      | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`; layers append in order. | `shared-core`, `stack-preset`                                                                            |
+| `roles.json`   | One `.claude/agents/<role>.md` wrapper per role whose brief is synced.                                           | model, tools, description                                                                                |
+| `vars.json`    | Template values, deep-merged in layer order.                                                                     | commands, branches, language                                                                             |
+| `skills.json`  | Names third-party skills by source; the `skills` CLI installs and locks them.                                    | `cursor/plugins`, `antfu/skills`                                                                         |
+| `seeds.json`   | Skip a seed when the project already has an older equivalent.                                                    | issue forms next to old `.md` templates                                                                  |
 
 Managed Markdown, YAML and shell files carry a "Managed by ai-devflow-core"
 note. JSON files cannot, so `ai-flow check` is the guard.
@@ -131,12 +131,12 @@ ours. Everything else is third-party and is **not copied**. Each layer's
 CLI](https://github.com/vercel-labs/skills) installs them and records exact
 versions in `skills-lock.json`:
 
-| Layer | Skills |
-|-------|--------|
-| `core/` | `cursor/plugins`: `thermo-nuclear-code-quality-review` |
-| `presets/node-ts/` | `antfu/skills`: `vitest`; `addyosmani/web-quality-skills`: `best-practices` |
+| Layer                               | Skills                                                                                                                                                                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/`                             | `cursor/plugins`: `thermo-nuclear-code-quality-review`                                                                                                                                                                                |
+| `presets/node-ts/`                  | `antfu/skills`: `vitest`; `addyosmani/web-quality-skills`: `best-practices`                                                                                                                                                           |
 | `presets/typescript-vite-firebase/` | `antfu/skills`: `vite`; `vercel-labs/json-render`: `react`; `vercel-labs/agent-skills`: `vercel-react-best-practices`; `addyosmani/web-quality-skills`: `accessibility`, `core-web-vitals`, `performance`, `seo`, `web-quality-audit` |
-| `presets/react-native-firebase/` | `vercel-labs/agent-skills`: `vercel-react-best-practices` |
+| `presets/react-native-firebase/`    | `vercel-labs/agent-skills`: `vercel-react-best-practices`                                                                                                                                                                             |
 
 `ai-flow` resolves core + preset + your `.ai-flow.json` into one list, then
 delegates to the `skills` CLI. Skills land in `.agents/skills/<name>/` with a
@@ -182,23 +182,23 @@ through the CLI.
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/Caiorrs-Dev/ai-devflow-core/main/schema/ai-flow.schema.json",
-  "preset": "typescript-vite-firebase",
-  "extends": ["egm"],
-  "vars": {
-    "language": { "collab": "Brazilian Portuguese", "docs": "English" },
-    "extra": {
-      "implementerRules": "- Analytics go through `@/telemetry`.\n- Test labels follow TESTS.md."
-    },
-    "agents": {
-      "toolRules": "- Prefix shell commands with `rtk` when it is installed.\n- When `.codegraph/` exists, use CodeGraph (`codegraph explore \"<query>\"`) before grep or file reads.",
-      "extraTools": ["mcp__codegraph__codegraph_explore"]
-    }
-  },
-  "disabledRoles": ["product-owner"],
-  "disabledFiles": [".github/workflows/back-merge.yml"],
-  "skills": { "JuliusBrussee/caveman": ["caveman"] },
-  "disabledSkills": ["seo"]
+	"$schema": "https://raw.githubusercontent.com/Caiorrs-Dev/ai-devflow-core/main/schema/ai-flow.schema.json",
+	"preset": "typescript-vite-firebase",
+	"extends": ["egm"],
+	"vars": {
+		"language": { "collab": "Brazilian Portuguese", "docs": "English" },
+		"extra": {
+			"implementerRules": "- Analytics go through `@/telemetry`.\n- Test labels follow TESTS.md."
+		},
+		"agents": {
+			"toolRules": "- Prefix shell commands with `rtk` when it is installed.\n- When `.codegraph/` exists, use CodeGraph (`codegraph explore \"<query>\"`) before grep or file reads.",
+			"extraTools": ["mcp__codegraph__codegraph_explore"]
+		}
+	},
+	"disabledRoles": ["product-owner"],
+	"disabledFiles": [".github/workflows/back-merge.yml"],
+	"skills": { "JuliusBrussee/caveman": ["caveman"] },
+	"disabledSkills": ["seo"]
 }
 ```
 
