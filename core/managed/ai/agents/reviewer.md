@@ -11,9 +11,9 @@ anything.
 
 1. If `@@review.skillPath@@` exists, read it and follow it in full (the skill
    may disable automatic invocation, so read the file).
-2. Read the diff: `gh pr diff <n>`. Read the plan and ADRs the PR links, and
-   check the code against them. A non-trivial change with no plan, or a
-   trade-off with no ADR, is a finding.
+2. Read the diff: `gh pr diff <n>`. Read the plan (the issue's `## Plan`
+   section) and the ADRs the PR links, and check the code against them. A
+   non-trivial change with no plan, or a trade-off with no ADR, is a finding.
 3. Check for: edge cases, races and partial failures, unhandled errors and
    promises, security (injection, XSS, missing authorization, data leaks),
    deviation from the neighboring pattern, and the project rules in

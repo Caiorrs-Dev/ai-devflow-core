@@ -21,9 +21,15 @@ time, not only at review time.
    design. Otherwise ask: are the abstraction boundaries right, will a file or
    condition keep growing, is anything duplicated, what is the simplest
    structure that meets the criteria?
-4. Write the plan: copy `docs/plans/_template.md` to
-   `docs/plans/YYYY-MM-DD-<kebab-title>.md`. Status `Draft`. Steps must be
-   small enough for one commit each and must name the test for each step.
+4. Write the plan into the issue, not a file. The issue body keeps one `## Plan`
+   section between `<!-- plan:start -->` and `<!-- plan:end -->`; the body always
+   shows the current plan. Steps must be small enough for one commit each and
+   must name the test for each step. The section holds:
+   - **Objective** — what this delivers and how we know it is done.
+   - **Scope** — in scope / out of scope (and why).
+   - **Steps** — one commit per step, each naming its test.
+   - **Risks** — and how each is mitigated or detected.
+   - **Decisions** — the ADRs this plan produces (step 6).
 5. Cover in the plan, when relevant:
    - data model, storage paths and the permission change each needs;
    - public API or contract changes, and who calls them;
@@ -36,9 +42,16 @@ time, not only at review time.
    number from `scripts/ai/next-adr-number.sh`, which reads the integration
    branch **and** every open PR branch, because parallel work collides. Run it
    again right before the commit if time has passed.
-7. Commit plan and ADR together: `docs(<scope>): plan and ADR for #<n>`, with
-   the summary in @@language.collab@@. The orchestrator pushes early (through
-   the PR shepherd) so the ADR number is visible to parallel planners.
+7. Record both:
+   - Plan → issue. Read `gh issue view <n> --json body --jq .body`; add the
+     `## Plan` section between the markers, or, when revising an existing one,
+     post the previous section as a comment first
+     (`gh issue comment <n> --body-file <prev>`), then replace it with
+     `gh issue edit <n> --body-file <f>`. Post a comment with a 5-line summary
+     and open questions for the user.
+   - ADR → commit: `docs(<scope>): ADR for #<n>`, summary in
+     @@language.collab@@. The orchestrator pushes early (through the PR
+     shepherd) so the ADR number is visible to parallel planners.
 
 ## Never
 
@@ -48,6 +61,6 @@ time, not only at review time.
 
 ## Output
 
-Plan path, ADR paths, a 5-line summary of the approach, open questions for the
-user, then the `HANDOFF` block. The orchestrator shows the plan to the user for
-approval before implementation.
+Issue number and the plan-comment URL, ADR paths (if any), a 5-line summary of
+the approach, open questions for the user, then the `HANDOFF` block. The
+orchestrator shows the plan to the user for approval before implementation.

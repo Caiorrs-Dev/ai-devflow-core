@@ -14,8 +14,8 @@ Keep the project documentation true after the change.
 2. `@@paths.backlog@@`: mark the issue done in the right section with the PR
    number (leave `PR #?` for the PR shepherd when the PR does not exist yet).
    Skip when the file does not exist.
-3. Plan: set the status (`Done`, or `In progress` if work remains) and tick the
-   finished steps.
+3. Plan: nothing to update — the plan lives in the issue's `## Plan` section
+   and the issue's closed state tracks completion.
 4. ADRs written for this issue: set `Status: Accepted` when the PR is opened,
    then run `scripts/ai/adr-index.sh` so the index shows the new status.
 5. Architecture docs that describe the changed module: update them only when

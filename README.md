@@ -7,9 +7,10 @@ keep it up to date:
   `HANDOFF` contract between them;
 - the `ship-issue` orchestrator skill for Claude Code, and generated
   `.claude/agents/*.md` subagent wrappers;
-- plan and ADR templates, `scripts/ai/next-adr-number.sh` (an ADR number that is
-  free across every open PR branch) and `scripts/ai/adr-index.sh` (rebuilds the
-  ADR index);
+- issue-resident plans (each change's plan lives in its issue's `## Plan`
+  section, with revisions as comments) and an ADR template,
+  `scripts/ai/next-adr-number.sh` (an ADR number that is free across every open
+  PR branch) and `scripts/ai/adr-index.sh` (rebuilds the ADR index);
 - a `CLAUDE.md` with two managed blocks (`AGENTS.md` and `GEMINI.md` are
   symlinks to it, or copies where symlinks are not available);
 - for Node projects: Husky hooks, commitlint, Biome 2, Knip, a test runner, and
@@ -64,7 +65,7 @@ has:
 
 | Folder or file | Behavior on `sync`                                                                       | Examples                                                                                                   |
 | -------------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `managed/`     | Overwritten every time; removed when no longer part of the plan. Do not edit in place.   | role briefs, `ship-issue`, ADR/plan templates, commitlint/release-please/back-merge workflows, Husky hooks |
+| `managed/`     | Overwritten every time; removed when no longer part of the plan. Do not edit in place.   | role briefs, `ship-issue`, the ADR template, commitlint/release-please/back-merge workflows, Husky hooks |
 | `seed/`        | Written once. The project owns it after, and a seed the project deletes stays deleted.   | `CLAUDE.md`, ADR index, PR and issue templates, `biome.json`, `knip.json`, build and test workflows        |
 | `blocks/`      | Rewritten between `<!-- ai-flow:<name>:start -->` and `:end -->` markers in `CLAUDE.md`; layers append in order. | `shared-core`, `stack-preset`                                                    |
 | `roles.json`   | One `.claude/agents/<role>.md` wrapper per role whose brief is synced.                   | model, tools, description                                                                                  |
@@ -295,7 +296,7 @@ including for the actions the workflows pin by commit SHA.
 
 - `next-adr-number.sh` sees only pushed branches. Two planners that pick a
   number before either pushes can still collide; the orchestrator pushes the
-  plan commit early to narrow that window.
+  ADR commit early to narrow that window.
 - The reviewer and planner use an external code-quality skill when it exists at
   `review.skillPath`; otherwise they fall back to the checklist in their brief.
 - `skills` subcommands shell out to `npx -y skills`; set `AI_FLOW_SKILLS_CMD` to

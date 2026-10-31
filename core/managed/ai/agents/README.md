@@ -18,12 +18,12 @@ add stack-specific roles (for example `rules-auditor`); `.ai-flow.json`
 |---|------|--------|----------------|------|
 | pre | product-owner | GitHub issues, backlog report | opus | raw request only |
 | 1 | issue-picker | git branch | haiku | always |
-| 2 | planner | `docs/plans/`, `docs/decisions/` | opus | always |
-| 2b | ui-ux | plan `## UI/UX` section | sonnet | user-visible change only |
+| 2 | planner | issue `## Plan` section, `docs/decisions/` | opus | always |
+| 2b | ui-ux | issue plan `## UI/UX` section | sonnet | user-visible change only |
 | 3 | implementer | source and tests | sonnet | always |
 | 4 | quality-gate | mechanical fixes only | sonnet | always |
 | 5 | rules-auditor | security rules and their tests | opus | preset role, data-access change only |
-| 6 | docs-keeper | `@@paths.features@@`, backlog report, plan/ADR status | haiku | always |
+| 6 | docs-keeper | `@@paths.features@@`, backlog report, ADR status | haiku | always |
 | 7 | pr-shepherd | push, pull request | haiku | always |
 | 8 | reviewer | PR comments only | opus | always |
 | 9 | bug-filer | GitHub issues only | haiku | when bugs were collected |
@@ -37,6 +37,8 @@ at the end with every out-of-scope bug collected from the handoffs.
 
 - Follow `CLAUDE.md` (`AGENTS.md`, `GEMINI.md`). It wins over this folder on
   conflict.
+- Every step from the planner on needs an open issue number; audit it. It is
+  the record every role reads from and writes to.
 - @@testing.e2ePolicy@@
 - Never deploy, never run migrations or backfills, never push to
   `@@branches.integration@@` or `@@branches.production@@`.
