@@ -135,6 +135,10 @@
 							"description": "Local security scan (Semgrep, gitleaks, trufflehog) the quality gate runs. Default `none.`. A leaked secret found here is reported to the user, never auto-fixed.",
 							"type": "string"
 						},
+						"audit": {
+							"description": "Dependency-audit command in the Security Scan workflow. Default `npm audit --audit-level=high` (reads package-lock.json); use `yarn npm audit` or `pnpm audit` when the project locks with another manager.",
+							"type": "string"
+						},
 						"e2e": {
 							"description": "End-to-end or smoke suite the quality gate runs (default `none.`: no E2E). At minimum a smoke test proving the app boots.",
 							"type": "string"

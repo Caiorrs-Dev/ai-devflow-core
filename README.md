@@ -24,11 +24,11 @@ records what it wrote in `.ai-flow.lock.json`, and reports drift.
 
 ```bash
 # In the project repository (Node 22+):
-npx github:Caiorrs-Dev/ai-devflow-core#v0.8.3 init --preset node-ts # x-release-please-version
+npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.3 init --preset node-ts # x-release-please-version
 # later, to pull framework updates (bump the tag first):
-npx github:Caiorrs-Dev/ai-devflow-core#v0.8.3 sync # x-release-please-version
+npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.3 sync # x-release-please-version
 # in CI or before a release, to fail on drift:
-npx github:Caiorrs-Dev/ai-devflow-core#v0.8.3 check # x-release-please-version
+npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.3 check # x-release-please-version
 ```
 
 Always pin a tag: an unpinned `check` compares against the latest `main`, so
@@ -268,7 +268,7 @@ GitHub side. For `node-ts`:
    Tests`** (plus **`Security Rules Tests`** with the `firebase` mixin),
    **`AI-flow Check`** and **`Security Scan`**.
    `AI-flow Check` runs
-   `npx github:Caiorrs-Dev/ai-devflow-core#v<version> check --strict` and fails
+   `npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v<version> check --strict` and fails
    when the project drifts from its preset (outdated or locally edited managed
    files, missing skills, a stale lock). The pin follows the version that last
    synced, so a core release never fails it until the project syncs.
