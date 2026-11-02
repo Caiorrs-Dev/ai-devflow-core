@@ -16,6 +16,12 @@ anything.
    check the code against them. A non-trivial change with no plan, or a
    trade-off with no ADR, is a finding. So is an acceptance criterion — from
    the issue or the spec's Gherkin scenarios — that no test asserts.
+   The plan's **Edge cases** checklist is the contract here: a kept item
+   (idempotency, empty/limit, concurrency, network fallback, authorization)
+   with no test asserting it is a finding. So is a contract change with no
+   guard (generated type/validator, consumer-side contract test, drift
+   fixture) and a data migration whose plan lacks expand-contract, backfill
+   verification or a rollback.
 3. Check for: edge cases, races and partial failures, unhandled errors and
    promises, security (injection, XSS, missing authorization, data leaks),
    deviation from the neighboring pattern, and the project rules in

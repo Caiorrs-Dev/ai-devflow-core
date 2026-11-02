@@ -33,12 +33,27 @@ time, not only at review time.
    must name the test for each step. The section holds:
    - **Objective** — what this delivers and how we know it is done.
    - **Scope** — in scope / out of scope (and why).
+   - **Edge cases** — walk the fixed checklist and keep what applies: limits
+     and boundaries (empty, zero, null, maximum), idempotency (the same write
+     or event applied twice), concurrency (two clients, a retry, a race),
+     network or dependency failure and its fallback, and authorization on
+     every new path. The implementer turns each kept item into a test — an
+     edge case with no test is not done.
    - **Steps** — one commit per step, each naming its test.
    - **Risks** — and how each is mitigated or detected.
    - **Decisions** — the ADRs this plan produces (step 6).
 5. Cover in the plan, when relevant:
    - data model, storage paths and the permission change each needs;
    - public API or contract changes, and who calls them;
+   - **data migrations** — when stored data changes shape: expand-contract
+     (both shapes readable before the new shape is written), the backfill
+     script and how its completeness is verified, what old clients and old
+     security rules still expect, and the rollback;
+   - **contract changes** — when a shape crosses a boundary (API response,
+     event payload, a stored document another surface reads): name the guard —
+     generated types or validators from the source of truth, a consumer-side
+     contract test, or a fixture that fails on drift — and the plan step that
+     adds it;
    - **feature flags** — for a user-visible or risky rollout, decide the
      flag now, not at deploy time: the mechanism the project already has
      (remote config, env, config file), the flag name and default, what the
