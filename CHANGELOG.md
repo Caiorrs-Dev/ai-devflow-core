@@ -4,6 +4,23 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.6.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.5.1...v0.6.0) (2026-11-02)
+
+
+### Features
+
+* **core:** seed FEATURES.md and a backlog priority report ([#50](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/50)) ([472e8f0](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/472e8f049f04068d2cd864c128e0f0bee6150bc9))
+* require an issue and write plans to the issue, not files ([#31](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/31)) ([e727280](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/e72728019f9b7f013a15aded893a997f505eda10)), closes [#30](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/30)
+
+
+### Bug Fixes
+
+* **adr:** page through open PRs when picking the next ADR number ([#47](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/47)) ([0b100fa](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/0b100fa24b5115da9bb61741d6a9ba38575c2219))
+* **lint-staged:** cover .mjs/.cjs and document the md/yml exclusion ([#48](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/48)) ([dbff616](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/dbff6162fdd7d4c869561bdb7db810e28893f898))
+* **node-base:** seed Node 22 so workflows match engines and @types/node ([#49](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/49)) ([0109087](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/0109087c3f964526e689dd7b01f987d0135da21e))
+* **skills:** stop shipping the maintainer's global manifest ([#51](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/51)) ([540842f](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/540842f81418e866d8528b338bf38ecdde3314ac))
+* warn when commands.* and a workflow install with different managers ([#17](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/17)) ([e000b84](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/e000b84664b5ebe433166312d60e7bda27e6777c))
+
 ## [0.5.1](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.5.0...v0.5.1) (2026-10-14)
 
 
