@@ -30,7 +30,10 @@ Push the branch and open (or update) the pull request against
      migrations).
    Title: a conventional commit (`feat(<scope>): <summary>`). With squash
    merges the title becomes the commit that release-please reads, and CI lints
-   it.
+   it — so the summary says what changes for the user, in the user's words
+   (`feat: filter orders by status`), not what was done in code
+   (`feat: add where clause to query`). That title is the release note a human
+   reads.
 5. If the PR exists, push only. Reply to each resolved review comment with the
    commit SHA that resolves it.
 6. Fill the PR number into `@@paths.backlog@@` if the docs keeper left `PR #?`,

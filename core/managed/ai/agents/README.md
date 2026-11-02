@@ -29,6 +29,7 @@ add stack-specific roles (for example `rules-auditor`); `.ai-flow.json`
 | 8 | reviewer | PR comments only | opus | always |
 | 9 | bug-filer | GitHub issues only | haiku | when bugs were collected |
 | audit | ui-auditor | UX audit reports, craft fixes | sonnet | preset role, on demand |
+| post | postmortem-writer | blameless postmortem, action items, runbooks | opus | after a production incident |
 
 After step 8, review findings go back to the implementer (3), then the quality
 gate (4), then the PR shepherd (7) pushes the fixes. The bug filer (9) runs once

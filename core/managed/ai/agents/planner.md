@@ -56,8 +56,13 @@ time, not only at review time.
      adds it;
    - **feature flags** — for a user-visible or risky rollout, decide the
      flag now, not at deploy time: the mechanism the project already has
-     (remote config, env, config file), the flag name and default, what the
-     dark-launch order is, and the plan and trigger for removing it;
+     (remote config, env, config file), the flag name and default, the
+     rollout order (dark-launch → canary or percentage → all) with who flips
+     each stage, and the plan and trigger for removing it;
+   - **production evidence** — the metric, log line or alert that proves the
+     change works after deploy, where it is read (dashboard, query, alert
+     channel), and the value that means success; name who verifies it and
+     when;
    - **verification** — which automated gates the change must pass (smoke or
      E2E, the accessibility scan, the performance budget) and whether the
      plan adds a gate where the project has none — at minimum, a

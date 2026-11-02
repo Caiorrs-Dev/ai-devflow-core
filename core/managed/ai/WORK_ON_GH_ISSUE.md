@@ -31,6 +31,14 @@ other raw request goes to `product-owner` (framed issue); a concrete task is
 filed by `issue-picker` as a minimal issue. Never start implementation without
 an issue number.
 
+## When production breaks
+
+Impact contained first, analysis second. When a shipped change causes a
+production incident, run the `postmortem-writer` role after mitigation: it
+writes a blameless postmortem to `docs/postmortems/`, files every action item
+as an owned GitHub issue (they re-enter this cycle normally), and adds a
+runbook to `docs/runbooks/` when one would have shortened the incident.
+
 ## Promoting to `@@branches.production@@`
 
 Promotion is a human decision, outside the issue cycle:
