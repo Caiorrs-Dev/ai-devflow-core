@@ -258,6 +258,13 @@ including for the actions the workflows pin by commit SHA.
 4. `AGENTS.md`/`GEMINI.md` that are not symlinks to `CLAUDE.md` produce a
    warning; merge and replace them.
 
+## Upgrading to 0.6
+
+- Plans moved from `docs/plans/*.md` into the issue's `## Plan` section. Old
+  plan files are neither managed nor seeds, so `sync` leaves them alone: they
+  are now historical record, not the live plan. Delete the folder or keep it as
+  an archive; the planner writes to the issue from now on.
+
 ## Upgrading to 0.5
 
 - ai-flow needs Node 22 or later.
