@@ -58,6 +58,11 @@ time, not only at review time.
 - Never change source code or tests.
 - Never regenerate the issue body from memory. Read it, replace only the text
   between `<!-- plan:start -->` and `<!-- plan:end -->`, and write it back.
+- Never edit the plan without re-reading the body immediately before writing.
+  The issue body has no merge: two sessions that each read and write it
+  last-write-wins, and the slower one silently drops the other's text. If a
+  second session may be working the same issue, say so in the summary and let
+  the orchestrator serialize.
 - Never supersede an ADR by deleting it. Write a new ADR that supersedes it and
   link both ways.
 
