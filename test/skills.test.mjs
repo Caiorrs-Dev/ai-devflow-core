@@ -131,6 +131,14 @@ describe("skills", () => {
 		rmSync(home, { recursive: true, force: true });
 	});
 
+	it("stops when the global manifest is missing instead of installing nothing", () => {
+		run(project, "init", "--preset", "node-ts");
+		const missing = path.join(project, "no-manifest.json");
+		const result = run(project, "skills", "global", "--file", missing);
+		assert.equal(result.status, 1);
+		assert.match(result.stderr, /no global skills manifest/);
+	});
+
 	it("snapshot groups this machine's global skills by source and skips sourceless entries", () => {
 		const home = tempDir("ai-flow-home-");
 		mkdirSync(path.join(home, ".agents"));

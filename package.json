@@ -19,7 +19,6 @@
 		"lib",
 		"core",
 		"presets",
-		"machine",
 		"schema"
 	],
 	"engines": {

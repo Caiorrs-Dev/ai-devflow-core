@@ -139,13 +139,14 @@ ai-flow skills remove <skill...>
 
 ### A new machine
 
-Global skills (personal, not project) come from `machine/global-skills.json`,
-which is the maintainer's own list: point `--file` at yours.
+Global skills (personal, not project) come from a manifest you own — the
+maintainer's own list is not shipped in the package. Create the file and point
+`--file` at it; without it, `skills global` stops and says so.
 
 ```bash
-ai-flow skills global                     # install every skill in that file
-ai-flow skills global caveman impeccable  # or just these (unknown names fail)
-ai-flow skills snapshot --out machine/global-skills.json   # refresh from this machine
+ai-flow skills snapshot --out ~/my-global-skills.json       # write your manifest
+ai-flow skills global --file ~/my-global-skills.json        # install every skill in it
+ai-flow skills global --file ~/my-global-skills.json caveman impeccable  # or just these
 ```
 
 `global` runs the `skills` CLI with `-g`, so skills land in
