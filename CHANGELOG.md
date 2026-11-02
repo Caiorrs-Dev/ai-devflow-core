@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.6](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.5...v0.8.6) (2026-11-02)
+
+
+### Bug Fixes
+
+* CI runner access to private core repo and husky shellcheck false positive ([#84](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/84)) ([04f8f73](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/04f8f73db486cdbe2a75dd50b61a5195fed7d68f))
+
 ## [0.8.5](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.4...v0.8.5) (2026-11-02)
 
 
