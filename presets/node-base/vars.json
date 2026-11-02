@@ -1,6 +1,6 @@
 {
 	"node": {
-		"version": "24"
+		"version": "22"
 	},
 	"commands": {
 		"lintFix": "npm run lint:fix",
