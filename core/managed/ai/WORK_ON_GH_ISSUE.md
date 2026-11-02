@@ -25,9 +25,11 @@ order by reading its brief.
    this branch.
 
 Every run needs an open issue. When the input has no issue number, the input
-decides who files it: a raw request goes to `product-owner` (framed issue); a
-concrete task is filed by `issue-picker` as a minimal issue. Never start
-implementation without an issue number.
+decides who files it: a feature-sized request goes to `spec-writer` (a `Spec:`
+issue with use cases, Gherkin acceptance criteria and a success metric); any
+other raw request goes to `product-owner` (framed issue); a concrete task is
+filed by `issue-picker` as a minimal issue. Never start implementation without
+an issue number.
 
 ## Promoting to `@@branches.production@@`
 

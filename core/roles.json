@@ -1,5 +1,11 @@
 [
 	{
+		"name": "spec-writer",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
+		"description": "Pre-cycle step for feature-sized requests. Runs a feasibility pass (does it fit the current design, what does it cost, what already exists) and writes a spec into a GitHub issue: use cases, edge cases, acceptance criteria in Given/When/Then, a success metric and non-goals. Runs before product-owner for features; a concrete task or a small request skips it. Never plans or codes."
+	},
+	{
 		"name": "product-owner",
 		"model": "opus",
 		"tools": ["Bash", "Read", "Grep", "Glob", "Edit"],

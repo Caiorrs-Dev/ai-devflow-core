@@ -50,8 +50,11 @@ or a second `status: failed` from the same step.
 
 **Issue gate:** every run needs an open issue. When the input has no issue
 number:
-- a **raw request** (feature idea, feedback, a "should we add…") goes to
-  **product-owner** first, which frames and files it;
+- a **feature-sized request** (new flow, new module, anything with a design
+  space) goes to **spec-writer** first: a feasibility pass and a `Spec:` issue
+  with use cases, edge cases, Gherkin acceptance criteria and a success metric;
+- any other **raw request** (feedback, a small "should we add…") goes to
+  **product-owner**, which frames and files it;
 - a **concrete task** (a specific fix or change the user already described) is
   filed by **issue-picker** as a minimal issue — one-line title, a few lines of
   what/why/verify — with no product-owner framing.
