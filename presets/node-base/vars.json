@@ -3,6 +3,8 @@
 		"version": "22"
 	},
 	"commands": {
+		"install": "npm ci",
+		"installNoScripts": "npm ci --ignore-scripts",
 		"lintFix": "npm run lint:fix",
 		"format": "npm run format",
 		"lint": "npm run lint -- --diagnostic-level=error",

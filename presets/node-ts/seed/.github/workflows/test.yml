@@ -65,7 +65,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: @@commands.install@@
 
       # Add a step here that writes dummy env values (for example VITE_* to
       # .env.local) when the app reads them at import time.

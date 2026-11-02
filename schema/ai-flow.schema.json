@@ -67,6 +67,20 @@
 						"packageName": { "description": "Defaults to package.json `name`.", "type": "string" }
 					}
 				},
+				"commands": {
+					"description": "Commands rendered into workflow `run:` steps. Must match the package manager the workflows install with (`check` warns on a mismatch).",
+					"type": "object",
+					"properties": {
+						"install": {
+							"description": "Dependency install step in the CI workflows. Default `npm ci`; use `npm install` when the lockfile was regenerated on a different npm version or platform and `npm ci` fails.",
+							"type": "string"
+						},
+						"installNoScripts": {
+							"description": "Install step of the managed commitlint workflow (scripts skipped for speed and safety). Default `npm ci --ignore-scripts`.",
+							"type": "string"
+						}
+					}
+				},
 				"extra": {
 					"description": "Project rules injected into the role briefs (Markdown bullets).",
 					"type": "object",

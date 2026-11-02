@@ -334,6 +334,39 @@ describe("sync and check", () => {
 		assert.ok(!existsSync(path.join(project, "AGENTS.md")));
 	});
 
+	it("renders commands.install and commands.installNoScripts, with the project override", () => {
+		// Defaults: npm ci everywhere.
+		run(project, "init", "--preset", "node-ts");
+		assert.match(read(".github/workflows/test.yml"), /run: npm ci\n/);
+		assert.match(read(".github/workflows/commitlint.yml"), /run: npm ci --ignore-scripts\n/);
+	});
+
+	it("honors a commands.install override (seeds render at init)", () => {
+		// Seeds are written once, so the override applies at init; an existing
+		// project re-inits or hand-edits its seed workflows.
+		write(
+			".ai-flow.json",
+			JSON.stringify({
+				preset: "node-ts",
+				vars: { commands: { install: "npm install" } },
+			}),
+		);
+		assert.equal(run(project, "init", "--preset", "node-ts", "--force").status, 0);
+		assert.match(read(".github/workflows/test.yml"), /run: npm install\n/);
+		assert.doesNotMatch(read(".github/workflows/test.yml"), /npm ci/);
+		// installNoScripts keeps its default.
+		assert.match(read(".github/workflows/commitlint.yml"), /run: npm ci --ignore-scripts\n/);
+	});
+
+	it("re-renders the managed commitlint workflow when commands.installNoScripts changes", () => {
+		run(project, "init", "--preset", "node-ts");
+		const config = JSON.parse(read(".ai-flow.json"));
+		config.vars = { commands: { installNoScripts: "npm install --ignore-scripts" } };
+		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
+		assert.equal(run(project, "sync").status, 0);
+		assert.match(read(".github/workflows/commitlint.yml"), /run: npm install --ignore-scripts\n/);
+	});
+
 	it("applies project vars and disabled roles, and removes a role disabled later", () => {
 		write(
 			".ai-flow.json",
