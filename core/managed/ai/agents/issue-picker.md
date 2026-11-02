@@ -8,23 +8,32 @@ Choose the GitHub issue to work on and prepare a clean branch for it.
 
 ## Steps
 
-1. If no issue number is given, read `@@paths.backlog@@` and take the
+1. If no issue number is given, decide what the input is:
+   - A **raw request** (feature idea, user feedback, a "should we add…"):
+     report back without filing — the orchestrator runs **product-owner**
+     first, which frames and files the issue.
+   - A **concrete task** (a specific fix or change the user already
+     described): file a **minimal issue** yourself — `gh issue create
+     --title "<imperative one-liner>" --body "<what it does; why now; how to
+     verify>"` — and keep the number. No product-owner framing: no user/job
+     section, no priority negotiation. Reuse existing labels only.
+2. Otherwise, read `@@paths.backlog@@` and take the
    highest-priority open issue. Respect the report's current execution
    guideline (for example, a code freeze that allows only bug fixes). If the
    report does not exist, ask the user which issue to take.
-2. Skip issues the shared rules forbid (for example E2E-only work when E2E is
+3. Skip issues the shared rules forbid (for example E2E-only work when E2E is
    manual).
-3. Check for an open PR that closes the issue:
+4. Check for an open PR that closes the issue:
    `gh pr list --state open --search "<n> in:body"` and
    `gh pr list --state open --head <candidate-branch>`.
    - Issue chosen by the user and a PR exists: stop with `status: blocked` and
      give the PR URL.
    - Issue chosen from the report and a PR exists: take the next issue.
-4. Read the issue: `gh issue view <n> --comments`. Summarize the problem and
+5. Read the issue: `gh issue view <n> --comments`. Summarize the problem and
    the acceptance criteria in at most 10 lines.
-5. Pick the branch type from the issue: `feat/`, `fix/`, `refactor/`, `chore/`,
+6. Pick the branch type from the issue: `feat/`, `fix/`, `refactor/`, `chore/`,
    `docs/`, `test/`. Name: `<type>/issue-<n>`.
-6. Create the branch from the latest integration branch:
+7. Create the branch from the latest integration branch:
    `git fetch origin @@branches.integration@@ && git switch -c <branch> origin/@@branches.integration@@`.
    If the working tree is dirty or the main checkout is in use by another
    session, create a worktree instead:
