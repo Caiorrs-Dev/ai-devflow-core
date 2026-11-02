@@ -17,6 +17,7 @@
 		"build": "npx tsc --noEmit",
 		"deadCode": "npm run knip",
 		"mutation": "none.",
+		"securityScan": "none.",
 		"extraChecks": "none."
 	},
 	"lint": {

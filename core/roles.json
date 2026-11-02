@@ -70,5 +70,11 @@
 		"model": "opus",
 		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
 		"description": "Outside the issue cycle, after a production incident. Reconstructs the timeline from logs and PRs, writes a blameless postmortem (root cause, contributing factors, detection and resolution gaps) to docs/postmortems/, files the action items as owned issues, and adds a runbook entry to docs/runbooks/ when one would have shortened the incident. Never fixes code."
+	},
+	{
+		"name": "threat-modeler",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "Step 2c of the issue cycle, only for changes that touch authentication, payments, PII, admin surfaces or keys. Applies STRIDE to the affected components, writes a Threat model section into the issue's plan, and files the mitigations as plan steps or issues. Read-only: never edits code or rules."
 	}
 ]
