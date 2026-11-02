@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.2](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.1...v0.8.2) (2026-11-02)
+
+
+### Bug Fixes
+
+* accept localFiles as a config key ([#20](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/20)) ([#73](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/73)) ([8ac0ba1](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/8ac0ba170323754a347a8a67c2b068761f871ff5))
+
 ## [0.8.1](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.0...v0.8.1) (2026-11-02)
 
 
