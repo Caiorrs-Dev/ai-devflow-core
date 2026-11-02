@@ -64,3 +64,13 @@ so the PR title becomes the commit release-please reads. A merge commit hides
 the PR's commits from release-please when they are older than the last
 release. release-please opens the release PR on `main`; merging it tags
 `vX.Y.Z`, which projects pin.
+
+## Changing a role brief
+
+A brief is a prompt; a change that "looks better" may make the outputs worse.
+When a change alters what a role produces (a new section, a new stop
+condition, a rewritten handoff), the PR shows the drift, not vibes: pick one
+real input (an issue or a diff from this repository's history), run the role
+before and after the change, and paste both outputs into the PR (collapsed or
+as files). The reviewer compares them; a change with no before/after pair is
+reviewed as cosmetic and must not claim behavioral effect.

@@ -31,6 +31,19 @@ other raw request goes to `product-owner` (framed issue); a concrete task is
 filed by `issue-picker` as a minimal issue. Never start implementation without
 an issue number.
 
+## Human gates
+
+Three gates the cycle never crosses by itself:
+
+1. **Plan approval** — the user approves the plan before any code.
+2. **PR approval** — the reviewer posts findings but never approves; the user
+   approves.
+3. **Merge** — the PR shepherd opens and updates the PR but never merges; the
+   user merges.
+
+Handoffs are self-reports: before acting on a claim ("PR opened", "tests
+pass"), read the artifact it names.
+
 ## When production breaks
 
 Impact contained first, analysis second. When a shipped change causes a
