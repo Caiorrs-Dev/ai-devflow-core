@@ -15,6 +15,15 @@ Run in this order. Stop at the first check that fails and is not mechanical.
    prove it is not used (callers from the code index or grep, dynamic imports,
    config files, scripts). When in doubt, keep it and report it.
 7. Extra checks for this project: @@commands.extraChecks@@
+8. E2E and smoke: @@commands.e2e@@ — skip when it reads `none.`. When the
+   project has a suite, run at least the smoke test ("the app boots") on every
+   change; the full suite follows @@testing.e2ePolicy@@.
+9. Accessibility: @@commands.a11y@@ — skip when it reads `none.`. When the
+   project has an automated scan (axe, Lighthouse), run it and fix violations
+   that are mechanical.
+10. Performance budget: @@commands.perfBudget@@ — skip when it reads `none.`.
+   When the project defines a bundle-size or Lighthouse budget, report the
+   numbers; a budget breach is not mechanical — report it, do not fix it.
 
 ## What counts as mechanical
 

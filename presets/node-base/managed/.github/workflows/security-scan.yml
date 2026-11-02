@@ -1,0 +1,43 @@
+name: Security Scan
+
+# Dependency audit and secret scan. npm audit fails on high or critical
+# vulnerabilities in the lockfile; gitleaks fails on a secret in the diff.
+# Weekly schedule catches new advisories against the current lock.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - @@branches.integration@@
+      - @@branches.production@@
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-scan-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: @@node.version@@
+      - name: Scan for leaked secrets
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
