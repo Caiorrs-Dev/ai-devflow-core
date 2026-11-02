@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.7](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.6...v0.8.7) (2026-11-02)
+
+
+### Bug Fixes
+
+* **deps:** support biome 2.6.3 formatting and schema ([09b1a44](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/09b1a44502860b5b243d11ed017fb080cd547601))
+
 ## [0.8.6](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.5...v0.8.6) (2026-11-02)
 
 ### Bug Fixes
