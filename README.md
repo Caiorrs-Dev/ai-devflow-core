@@ -40,6 +40,25 @@ another version.
 Then finish the setup the CLI cannot do (see [Repository setup](#repository-setup))
 and verify it with `ai-flow doctor`.
 
+## Environments and reproducibility
+
+- Secrets and config are per environment (dev, stage, prod), suffixed by name
+  (`FIREBASE_ANDROID_DEV_CONFIG`, `FIREBASE_ANDROID_STAGE_CONFIG`, …) and
+  mapped in CI by branch. A PR runner never holds a production secret: PRs
+  run against the dev environment, pushes to the integration branch against
+  stage, and only the promotion pipeline touches prod.
+- Deploy previews (Vercel, Firebase preview channels, EAS on a PR branch)
+  are part of review: the reviewer and UI auditor look at the running app,
+  not code-blind.
+- The pipeline is reproducible: actions pinned to SHAs, one Node version var
+  (`node.version`), the same install command everywhere (`commands.install`),
+  and runner caches keyed by the lockfile. "Works on my machine" is not a
+  CI answer — if a run differs between runners, that is a bug in the
+  workflow, not in the runner.
+- Turn on failure notifications for the repo (Settings > Notifications, or a
+  Slack/Teams integration), so a red pipeline reaches a human without
+  someone watching the Actions tab.
+
 ## Presets
 
 | Preset                     | Extends               | Adds                                                                                       |

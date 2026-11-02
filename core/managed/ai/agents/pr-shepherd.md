@@ -36,7 +36,14 @@ Push the branch and open (or update) the pull request against
    reads.
 5. If the PR exists, push only. Reply to each resolved review comment with the
    commit SHA that resolves it.
-6. Fill the PR number into `@@paths.backlog@@` if the docs keeper left `PR #?`,
+6. When the project deploys preview environments (Vercel, Firebase preview
+   channels, EAS update on a PR branch), post the preview URL as a PR comment
+   and note it in the handoff — the reviewer and UI auditor look at the
+   running app, not code-blind.
+7. Deploy steps in the notes name the **environment** (dev, stage, prod) for
+   every step — a config change, secret or migration without its environment
+   is ambiguous, and prod never rides along silently.
+8. Fill the PR number into `@@paths.backlog@@` if the docs keeper left `PR #?`,
    then commit and push.
 
 ## Never

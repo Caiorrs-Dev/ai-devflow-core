@@ -64,5 +64,10 @@ Promotion is a human decision, outside the issue cycle:
 3. release-please opens or updates its release PR on `@@branches.production@@`.
    Merging that PR tags the version; the back-merge workflow then brings the
    version bump back into `@@branches.integration@@`.
+4. The production deploy is part of the release, not an afterthought: before
+   promoting, confirm the deploy steps and their environments are listed (see
+   the PR notes), the feature flag's rollout stage is decided, and the
+   rollback is one command or click away — the previous tag, the flag's
+   default, or the runbook for the affected service.
 
 @@testing.e2ePolicy@@

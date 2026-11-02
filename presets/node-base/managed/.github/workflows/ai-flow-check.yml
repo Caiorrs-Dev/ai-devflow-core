@@ -35,3 +35,26 @@ jobs:
           node-version: @@node.version@@
       - name: Check ai-flow drift
         run: npx github:Caiorrs-Dev/ai-devflow-core#v@@aiFlow.version@@ check --strict
+
+  # The pipeline itself is code: lint the workflows and shell scripts the
+  # project ships, so a YAML typo or a hook bug fails here and not on the
+  # first run that needs it.
+  pipeline-lint:
+    name: Pipeline Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install actionlint
+        run: |
+          version=1.7.7
+          curl -fsSL -o actionlint.tgz "https://github.com/rhysd/actionlint/releases/download/v${version}/actionlint_${version}_linux_amd64.tar.gz"
+          curl -fsSL -o checksums.txt "https://github.com/rhysd/actionlint/releases/download/v${version}/actionlint_${version}_checksums.txt"
+          grep "actionlint_${version}_linux_amd64.tar.gz" checksums.txt | sha256sum -c -
+          tar -xzf actionlint.tgz actionlint
+      - name: Lint workflows and scripts
+        run: |
+          ./actionlint
+          files="$(git ls-files '*.sh' .husky)"
+          if [ -n "$files" ]; then shellcheck $files; fi
