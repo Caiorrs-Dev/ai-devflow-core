@@ -38,7 +38,8 @@ describe("doctor", () => {
 								{ context: "Build & Type Check" },
 								{ context: "Commitlint" },
 								{ context: "Unit Tests" },
-								{ context: "AI-flow Check" }, { context: "Security Scan" },
+								{ context: "AI-flow Check" },
+								{ context: "Security Scan" },
 							],
 						},
 					},
@@ -49,7 +50,10 @@ describe("doctor", () => {
 		});
 		const result = run(project, "doctor", { env });
 		assert.equal(result.status, 0, result.stderr);
-		assert.match(result.stdout, /ok: stage requires Build & Type Check, Commitlint, AI-flow Check, Security Scan, Unit Tests/);
+		assert.match(
+			result.stdout,
+			/ok: stage requires Build & Type Check, Commitlint, AI-flow Check, Security Scan, Unit Tests/,
+		);
 		assert.match(result.stdout, /ok: main requires/);
 		assert.match(result.stderr, /warning: secret RELEASE_PLEASE_TOKEN is not set/);
 	});
