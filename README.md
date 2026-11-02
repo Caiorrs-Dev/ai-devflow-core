@@ -217,6 +217,10 @@ GitHub side. For `node-ts`:
    `disabledFiles` before the first sync.
 2. Scripts: `lint` (`biome check .`), `lint:fix` (`biome check --write .`),
    `format` (`biome format --write .`), `build`, `knip`.
+   The seeded `.lintstagedrc.json` covers what Biome can fix — JS/TS (including
+   `.mjs`/`.cjs`), JSON/JSONC and CSS. Markdown and YAML are deliberately
+   excluded: Biome does not format them, and a formatter that rewrites them
+   would fight the managed blocks and the workflow files.
 3. Branches: create `stage` from `main` and push it.
 4. Branch protection or rulesets on `stage` and `main`: require a PR and these
    status checks — **`Build & Type Check`**, **`Commitlint`**, **`Unit
