@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.4](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.3...v0.8.4) (2026-11-02)
+
+
+### Bug Fixes
+
+* runner-safe installs and scans in the managed workflows ([#44](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/44) [#45](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/45)) ([#77](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/77)) ([19d5ad2](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/19d5ad2f6bd8d58581b0fcf8768cd33aa7e2f659))
+
 ## [0.8.3](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.2...v0.8.3) (2026-11-02)
 
 
