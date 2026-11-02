@@ -489,24 +489,24 @@ describe("sync and check", () => {
 	it("warns when commands.* and a workflow's install step use different package managers", () => {
 		run(project, "init", "--preset", "react-native-firebase");
 		const config = JSON.parse(read(".ai-flow.json"));
-		config.vars = { commands: { test: "yarn test --silent" } };
+		config.vars = { commands: { testCoverage: "yarn test --silent" } };
 		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
 		// The seeded workflow still holds the command from `init`, so this is the
 		// "a re-seed would mix managers" case.
 		assert.match(
 			run(project, "check").stderr,
-			/commands\.test runs "yarn" but .*test\.yml installs with "npm": the workflow does not run this command today/,
+			/commands\.testCoverage runs "yarn" but .*test\.yml installs with "npm": the workflow does not run this command today/,
 		);
 	});
 
 	it("warns that CI installs one manager and runs another when the workflow runs the command", () => {
 		run(project, "init", "--preset", "react-native-firebase");
 		const config = JSON.parse(read(".ai-flow.json"));
-		config.vars = { commands: { test: "yarn test --silent" } };
+		config.vars = { commands: { testCoverage: "yarn test --silent" } };
 		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
 		write(
 			".github/workflows/test.yml",
-			read(".github/workflows/test.yml").replace("npm test -- --silent", "yarn test --silent"),
+			read(".github/workflows/test.yml").replace("npx jest --coverage --silent", "yarn test --silent"),
 		);
 		assert.match(run(project, "check").stderr, /the CI would install one package manager and run another/);
 	});
@@ -514,7 +514,7 @@ describe("sync and check", () => {
 	it("names corepack when packageManager pins the manager the command uses", () => {
 		run(project, "init", "--preset", "react-native-firebase");
 		const config = JSON.parse(read(".ai-flow.json"));
-		config.vars = { commands: { test: "yarn test --silent" } };
+		config.vars = { commands: { testCoverage: "yarn test --silent" } };
 		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
 		write("package.json", `${JSON.stringify({ name: "x", packageManager: "yarn@4.18.0" }, null, "	")}\n`);
 		assert.match(run(project, "check").stderr, /also needs corepack enabled on the runner/);

@@ -13,6 +13,7 @@
 		"testFiles": "npm test -- <paths>",
 		"build": "npx tsc --noEmit",
 		"deadCode": "npm run knip",
+		"mutation": "none.",
 		"extraChecks": "none."
 	},
 	"lint": {

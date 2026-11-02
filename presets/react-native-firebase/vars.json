@@ -2,7 +2,8 @@
 	"commands": {
 		"typecheck": "npx tsc --noEmit",
 		"test": "npm test -- --silent",
-		"testFiles": "npm test -- --silent <paths>"
+		"testFiles": "npm test -- --silent <paths>",
+		"testCoverage": "npx jest --coverage --silent"
 	},
 	"lint": {
 		"includes": ["src/**", "app/**", "__tests__/**", "scripts/**", "index.js", "App.tsx", "*.config.*"]

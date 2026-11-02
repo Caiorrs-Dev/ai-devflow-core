@@ -64,5 +64,5 @@ jobs:
       - name: Install dependencies
         run: @@commands.install@@
 
-      - name: Run unit tests
-        run: @@commands.test@@
+      - name: Run unit tests (with coverage)
+        run: @@commands.testCoverage@@

@@ -23,7 +23,15 @@ Write the code and the tests for an approved plan, or resolve review comments.
    5. Before calling a step done, cover the plan's **Edge cases** checklist:
       each kept item (idempotency, empty/limit, concurrency, network fallback,
       authorization) has its own failing-then-passing test, not just the happy
-      path.
+      path. Name each test after what it asserts — a Gherkin scenario from the
+      spec or issue becomes one test named after the scenario, so the mapping
+      criterion → test is visible in the test list.
+   6. Prefer a property-based test for edge cases that are ranges, not
+      examples: for pure logic (parsers, reducers, validators, formatters),
+      generate inputs with the project's property-testing library
+      (fast-check, fast-check-like, Hypothesis-class) instead of hand-picking
+      samples — one property test can cover the whole boundary class the
+      checklist item describes.
 4. Project rules that apply to every change:
    @@extra.implementerRules@@
 5. When resolving review comments: one commit per comment or per coherent group,

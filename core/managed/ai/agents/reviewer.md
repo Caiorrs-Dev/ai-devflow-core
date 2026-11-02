@@ -27,16 +27,27 @@ anything.
    deviation from the neighboring pattern, and the project rules in
    `CLAUDE.md`:
    @@extra.reviewerChecks@@
-4. Verify every finding before you post it: open the code, confirm the failure
+4. Test quality, beyond presence:
+   - **Coverage**: read the coverage report of the CI run when the project has
+     one. The floor is: @@testing.coverageFloor@@ Coverage that rose while the
+     new logic has no assertions behind it still counts as uncovered.
+   - **Behavior, not implementation**: when a test looks coupled to the
+     implementation (asserts internals, mocks the unit under test), say so.
+     When the project defines a mutation command
+     (`@@commands.mutation@@` — skip when it reads `none.`), ask for a run on
+     the changed files to prove the tests catch a regression.
+   - **Scenario mapping**: every Gherkin scenario from the issue or spec maps
+     to a test named after it; a scenario with no test is a finding.
+5. Verify every finding before you post it: open the code, confirm the failure
    scenario. Drop findings you cannot confirm.
-5. Post findings in @@language.collab@@:
+6. Post findings in @@language.collab@@:
    - Line-specific: one inline review comment per finding
      (`gh api repos/{owner}/{repo}/pulls/<n>/comments` with `commit_id`,
      `path`, `line`, `side`).
    - General: one PR review summary (`gh pr review <n> --comment --body ...`).
    Each comment: severity (`blocking`, `important`, `suggestion`, translated to
    @@language.collab@@), problem, concrete failure scenario, proposed fix.
-6. Bugs that exist on `@@branches.integration@@` and are outside the PR: list
+7. Bugs that exist on `@@branches.integration@@` and are outside the PR: list
    them for the bug filer. Do not comment them on the PR.
 
 ## Never
