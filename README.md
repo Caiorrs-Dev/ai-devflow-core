@@ -246,12 +246,16 @@ GitHub side. For `node-ts`:
 3. Branches: create `stage` from `main` and push it.
 4. Branch protection or rulesets on `stage` and `main`: require a PR and these
    status checks — **`Build & Type Check`**, **`Commitlint`**, **`Unit
-   Tests`** (plus **`Security Rules Tests`** with the `firebase` mixin), and
-   **`AI-flow Check`** — a managed workflow that runs
+   Tests`** (plus **`Security Rules Tests`** with the `firebase` mixin),
+   **`AI-flow Check`** and **`Security Scan`**.
+   `AI-flow Check` runs
    `npx github:Caiorrs-Dev/ai-devflow-core#v<version> check --strict` and fails
    when the project drifts from its preset (outdated or locally edited managed
    files, missing skills, a stale lock). The pin follows the version that last
    synced, so a core release never fails it until the project syncs.
+   `Security Scan` runs gitleaks (secret scan) and `npm audit
+   --audit-level=high` (dependency audit) on every PR and weekly against the
+   current lock.
    Required checks match **job** names, not workflow names.
 5. Secrets:
    - `BACK_MERGE_TOKEN`: a fine-grained PAT or GitHub App token with contents

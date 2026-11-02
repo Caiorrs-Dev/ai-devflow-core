@@ -130,6 +130,18 @@
 						"mutation": {
 							"description": "Mutation-testing command run on the changed files when a review doubts the tests catch a regression. Default `none.` (no mutation testing).",
 							"type": "string"
+						},
+						"e2e": {
+							"description": "End-to-end or smoke suite the quality gate runs (default `none.`: no E2E). At minimum a smoke test proving the app boots.",
+							"type": "string"
+						},
+						"a11y": {
+							"description": "Automated accessibility scan (axe, Lighthouse) the quality gate runs. Default `none.`.",
+							"type": "string"
+						},
+						"perfBudget": {
+							"description": "Performance-budget command (bundle size, Lighthouse budget) the quality gate reports. Default `none.`; a breach is reported, not auto-fixed.",
+							"type": "string"
 						}
 					}
 				},
