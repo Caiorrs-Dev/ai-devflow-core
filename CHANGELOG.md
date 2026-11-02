@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.3](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.2...v0.8.3) (2026-11-02)
+
+
+### Bug Fixes
+
+* accept localFiles entries in subdirectories of managed dirs ([#75](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/75)) ([a503025](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/a503025147b1556ca9a856eb48378c690b7436eb))
+
 ## [0.8.2](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.1...v0.8.2) (2026-11-02)
 
 
