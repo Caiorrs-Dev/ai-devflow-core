@@ -65,6 +65,31 @@ role anchors to.
 Run roles one at a time: they commit to the same branch, and parallel commits
 collide on the git index.
 
+## Verify done-claims before passing them on
+
+A `HANDOFF` block is a self-report. Before acting on any claim, read the
+artifact it names — "PR opened" → `gh pr view <n>`; "plan written" → the
+issue's `## Plan` section exists and is non-empty; "tests pass" → the output
+with counts, not "all good"; "committed" → `git log` on the branch. A claim
+you cannot verify goes back to the role that made it; never forward a
+verification you did not run.
+
+## Human gates
+
+Three gates the cycle never crosses by itself, at any step:
+
+1. **Plan approval** — implementation starts only after the user approves
+   (or `--no-plan-gate`).
+2. **PR approval** — the reviewer never approves; the user does.
+3. **Merge** — the pr-shepherd never merges; the user does.
+
+## Cost discipline
+
+Each role runs on the model its wrapper assigns — do not upgrade a role's
+model mid-run because a step feels hard; report the difficulty instead. When
+the tool exposes token usage per subagent, include the per-role totals in the
+final report so the user sees what the run cost.
+
 ## Final report to the user
 
 PR URL, commits, tests run, review rounds and findings left open, issues filed,

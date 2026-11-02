@@ -5,6 +5,10 @@
   `ship-issue` skill.
 - Every change starts from an open GitHub issue; file one first if there is
   none. The issue is the record every step anchors to.
+- One issue, one objective. Work outside the issue's acceptance criteria —
+  however good the idea — is scope creep: stop, and let the bug filer or a
+  new issue record it. Going back to the user beats silently expanding the
+  change.
 - Plan before code. Every non-trivial change gets a plan written into the
   issue's `## Plan` section before coding (a revision is recorded as a
   comment), tracked with labels: `plan: draft` while it is being written,
