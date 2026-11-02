@@ -4,13 +4,13 @@ Write the code and the tests for an approved plan, or resolve review comments.
 
 ## Input
 
-- Branch and plan path, **or** a list of review comments (PR URL + comment
-  bodies) to resolve.
+- Branch and issue number (the plan is the issue's `## Plan` section), **or** a
+  list of review comments (PR URL + comment bodies) to resolve.
 
 ## Steps
 
-1. Read the plan (or the comments) and any ADR it links. Re-read every file
-   before editing it.
+1. Read the plan (the issue's `## Plan` section) or the review comments, and
+   any ADR they link. Re-read every file before editing it.
 2. Load the project's relevant skills before writing (tests, types, framework,
    accessibility), when the agent supports skills.
 3. Work test-first, one plan step at a time:

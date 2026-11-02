@@ -22,7 +22,8 @@ previous `HANDOFF` block. Stop and report to the user on any `status: blocked`
 or a second `status: failed` from the same step.
 
 1. **issue-picker** — argument: the issue number, if given.
-2. **planner** — then show the user the plan summary and open questions, and
+2. **planner** — writes the plan into the issue's `## Plan` section (and posts
+   a summary comment); then show the user that plan and the open questions, and
    wait for approval. Skip the wait only with `--no-plan-gate` or when the
    planner returns `plan: not needed`. When the planner wrote an ADR, ask the
    **pr-shepherd** for an early push of the branch so parallel planners see the
@@ -44,8 +45,10 @@ or a second `status: failed` from the same step.
 11. **bug-filer** — once, at the end, with every unrelated bug collected from
     all handoffs. Skip when the list is empty.
 
-Run **product-owner** before step 1 only when the input is a raw request rather
-than a filed issue; with an issue number, start at step 1.
+**Issue gate:** every run needs an open issue. When the input has no issue
+number and no backlog entry, run **product-owner** first to file one. Never
+start implementation without an issue number — it is the record every role
+anchors to.
 
 Run roles one at a time: they commit to the same branch, and parallel commits
 collide on the git index.

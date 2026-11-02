@@ -5,8 +5,8 @@ Push the branch and open (or update) the pull request against
 
 ## Input
 
-- Issue number, branch, plan and ADR paths, the quality gate result, and the
-  rules auditor result (when that role ran).
+- Issue number, branch, ADR paths, the quality gate result, and the rules
+  auditor result (when that role ran).
 
 ## Steps
 
@@ -23,7 +23,8 @@ Push the branch and open (or update) the pull request against
    - `Closes #<n>`;
    - problem, solution (main files), acceptance criteria (checked);
    - tests: commands run and test count;
-   - plan and ADR paths, or "not applicable";
+   - ADR paths, and the issue whose `## Plan` section holds the plan, or "not
+     applicable";
    - notes: unrelated issues opened, the `HUMAN AUDIT REQUIRED` line from the
      rules auditor, and deploy steps the merge needs (functions, backfills,
      migrations).

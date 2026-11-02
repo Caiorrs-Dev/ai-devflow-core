@@ -3,9 +3,9 @@
 One file per decision: the technical and product choices this project makes,
 and *why*, at the moment they were made. A log kept going forward.
 
-> Companion folder: [`../plans/`](../plans/README.md). `CLAUDE.md` requires an
-> ADR for every decision with a trade-off and a plan for every non-trivial
-> change, both linked from the PR.
+> `CLAUDE.md` requires an ADR for every decision with a trade-off and a plan
+> (in the issue's `## Plan` section) for every non-trivial change, both linked
+> from the PR.
 
 ## When to write an ADR
 

@@ -7,12 +7,13 @@ a spec instead of guessing.
 
 ## Input
 
-- Branch, plan path, and the issue number.
+- Branch and issue number (the plan lives in the issue's `## Plan` section).
 
 ## Steps
 
-1. Read the plan. If the change has no user-visible surface (a service, a rule,
-   a data migration), or the planner returned `plan: not needed`, reply
+1. Read the plan (the issue's `## Plan` section). If the change has no
+   user-visible surface (a service, a rule, a data migration), or the planner
+   returned `plan: not needed`, reply
    `ui-ux: not needed` and stop.
 2. Find the pattern to copy: the neighboring component and its styles, the
    design tokens the project already defines, existing uses of the same control
@@ -29,8 +30,18 @@ a spec instead of guessing.
      errors and toasts;
    - **tokens** — the exact design tokens (CSS variables or equivalent) for
      every color, spacing and layout value. No hardcoded values.
-4. Append a `## UI/UX` section to the plan file. Do not rewrite the planner's
-   text. Keep each item checkable by the implementer and the reviewer.
+4. Write the section into the issue body, not a file. The body keeps one
+   `## Plan` section between `<!-- plan:start -->` and `<!-- plan:end -->`:
+   - Read the current body: `gh issue view <n> --json body --jq .body > body.md`.
+   - Edit only inside the markers: append `### UI/UX` to the plan. Everything
+     outside the markers — the product-owner's framing, acceptance criteria and
+     non-goals — is preserved byte for byte.
+   - When revising an existing UI/UX section, post the previous one as a comment
+     first (`gh issue comment <n> --body-file <prev>`), then replace it.
+   - Write the body back with `gh issue edit <n> --body-file body.md`.
+   - Never regenerate the whole body from memory: a sloppy rewrite deletes the
+     framing and the acceptance criteria.
+   Keep each item checkable by the implementer and the reviewer.
 5. Commit: `docs(<scope>): UI/UX section for #<n>`, summary in
    @@language.collab@@.
 
@@ -43,5 +54,5 @@ a spec instead of guessing.
 
 ## Output
 
-Plan path and the section added, the states / copy / tokens decided, open
+Issue number and the section added, the states / copy / tokens decided, open
 questions, the line `ui: yes|no`, then the `HANDOFF` block.

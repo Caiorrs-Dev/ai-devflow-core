@@ -8,9 +8,9 @@ order by reading its brief.
 1. **Pick** (`issue-picker`): the issue the user named, or the top of
    `@@paths.backlog@@`. Check no open PR already closes it. Branch
    `<type>/issue-<n>` from `@@branches.integration@@`.
-2. **Plan** (`planner`, then `ui-ux` for user-visible changes): a plan in
-   `docs/plans/` and an ADR in `docs/decisions/` for each trade-off.
-   The user approves the plan before any code.
+2. **Plan** (`planner`, then `ui-ux` for user-visible changes): a plan written
+   into the issue's `## Plan` section and an ADR in `docs/decisions/` for each
+   trade-off. The user approves the plan before any code.
 3. **Implement** (`implementer`): test-first, small conventional commits.
 4. **Gate** (`quality-gate`): lint, format, typecheck, unit tests, build, dead
    code. Only mechanical fixes here.
@@ -24,8 +24,9 @@ order by reading its brief.
 9. **File unrelated bugs** (`bug-filer`) as separate issues. Never fix them in
    this branch.
 
-Before step 1, run `product-owner` only when the input is a raw request rather
-than a filed issue.
+Every run needs an open issue. Run `product-owner` when the input is a raw
+request or has no issue number: it files the issue the rest of the cycle
+anchors to. Never start implementation without an issue number.
 
 ## Promoting to `@@branches.production@@`
 

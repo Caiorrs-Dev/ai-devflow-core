@@ -20,7 +20,7 @@ Closes #
 ## Plans and decisions
 
 <!-- Required for non-trivial changes (see CLAUDE.md). Fill in or write "not applicable". -->
-- Plan: `docs/plans/YYYY-MM-DD-<title>.md` — or "not applicable"
+- Plan: the issue's `## Plan` section (this PR's `Closes #N`) — or "not applicable"
 - ADR: `docs/decisions/NNNN-<title>.md` — or "not applicable"
 
 ## Notes
