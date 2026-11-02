@@ -52,9 +52,12 @@ and verify it with `ai-flow doctor`.
 | Mixin      | Adds                                                                       |
 | ---------- | -------------------------------------------------------------------------- |
 | `firebase` | `rules-auditor` role, the `Security Rules Tests` workflow, the rules duties |
+| `egm`      | The 7 upstream EGM skills and 9 stateless reviewer roles (Elephant-Goldfish Model) |
 
-`ai-flow presets` lists them. `extends` takes one name or a list; a mixin is a
-layer that only makes sense extended, so `init` refuses it. A new stack
+`ai-flow presets` lists them. A preset's `extends` takes one name or a list; a
+mixin is a layer that only makes sense extended, so `init` refuses it as the
+preset. A project opts into a mixin with `"extends"` in `.ai-flow.json` (see
+[Project configuration](#project-configuration-ai-flowjson)). A new stack
 (Python, Go…) is a new folder under `presets/`; see
 [CONTRIBUTING.md](./CONTRIBUTING.md).
 
@@ -161,6 +164,7 @@ through the CLI.
 {
   "$schema": "https://raw.githubusercontent.com/Caiorrs-Dev/ai-devflow-core/main/schema/ai-flow.schema.json",
   "preset": "typescript-vite-firebase",
+  "extends": ["egm"],
   "vars": {
     "language": { "collab": "Brazilian Portuguese", "docs": "English" },
     "extra": {
@@ -182,6 +186,9 @@ through the CLI.
   Multi-line values placed alone on an indented line keep that indentation;
   arrays render as JSON. `project.name` and `project.version` come from
   `package.json`, and `release.packageName` defaults to the name.
+- `extends` layers one or more mixins after the preset, in order. Only mixins
+  are accepted (`ai-flow presets` marks them); a mixin cannot be the `preset`
+  itself. `ai-flow roles` and `ai-flow skills` show the resolved result.
 - `commands.*` are rendered into the workflows' `run:` steps, so they must use
   the package manager those workflows install with (`npm` in every shipped
   preset). A project on yarn/pnpm either matches its commands to the install

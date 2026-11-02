@@ -1,0 +1,12 @@
+{
+	"$comment": "Upstream: github.com/google/elephant-goldfish-model (Apache-2.0). Skills live at skills/<name>/SKILL.md; --full-depth is already used by installBySource.",
+	"google/elephant-goldfish-model": [
+		"egm-bootstrap",
+		"egm-brainstorm",
+		"egm-draft",
+		"egm-drift-report",
+		"egm-resolve",
+		"egm-review",
+		"egm-review-loop"
+	]
+}

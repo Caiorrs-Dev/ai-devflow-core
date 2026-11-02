@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import { describe, it } from "node:test";
 import { parseArgs } from "../bin/ai-flow.mjs";
 import { validateConfig } from "../lib/config.mjs";
 import { unifiedDiff } from "../lib/diff.mjs";
-import { presetChain } from "../lib/layers.mjs";
+import { layersFor, presetChain } from "../lib/layers.mjs";
 import { applyBlocks, render, withManagedNote } from "../lib/render.mjs";
 import { normalizeSource, skillsCommand } from "../lib/skills.mjs";
 import { deepMerge, splitCommand } from "../lib/util.mjs";
@@ -153,6 +154,30 @@ describe("parseArgs", () => {
 		assert.equal(options.strict, true);
 		assert.equal(options.json, true);
 		assert.equal(options.help, true);
+	});
+});
+
+describe("project extends", () => {
+	it("accepts a mixin name or a list of mixin names", () => {
+		assert.deepEqual(validateConfig({ preset: "node-ts", extends: "egm" }), []);
+		assert.deepEqual(validateConfig({ preset: "node-ts", extends: ["egm"] }), []);
+	});
+
+	it("rejects a preset that is not a mixin", () => {
+		assert.throws(() => validateConfig({ preset: "node-ts", extends: "node-base" }), /not a mixin/);
+	});
+
+	it("rejects a non-string extends", () => {
+		assert.throws(() => validateConfig({ preset: "node-ts", extends: 42 }), /mixin name or an array/);
+	});
+
+	it("layers the mixin after the preset chain", () => {
+		const layers = layersFor("node-ts", ["egm"]);
+		const posix = (dir) => dir.replaceAll(path.sep, "/");
+		const egm = layers.findIndex((dir) => posix(dir).endsWith("/presets/egm"));
+		const nodeTs = layers.findIndex((dir) => posix(dir).endsWith("/presets/node-ts"));
+		assert.ok(egm > nodeTs, "egm must come after node-ts");
+		assert.equal(layers.filter((dir) => posix(dir).endsWith("/presets/egm")).length, 1);
 	});
 });
 
