@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: @@node.version@@
       - name: Check ai-flow drift
-        run: npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v@@aiFlow.version@@" check --strict
+        run: npx -y "git+https://x-access-token:${{ github.token }}@github.com/Caiorrs-Dev/ai-devflow-core.git#v@@aiFlow.version@@" check --strict
 
   # The pipeline itself is code: lint the workflows and shell scripts the
   # project ships, so a YAML typo or a hook bug fails here and not on the
@@ -60,7 +60,7 @@ jobs:
         # shellchecked by the explicit step below.
         run: |
           ./actionlint -shellcheck=
-          files="$(git ls-files '*.sh' .husky)"
+          files="$(git ls-files '*.sh')"
           if [ -n "$files" ]; then
             # word splitting on $files is the point: one shellcheck per file
             # shellcheck disable=SC2086
