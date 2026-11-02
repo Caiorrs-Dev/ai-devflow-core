@@ -18,16 +18,16 @@ tests on Linux, macOS and Windows.
 
 ## Layout
 
-| Path | What |
-|---|---|
-| `bin/ai-flow.mjs` | Argument parsing and commands. |
-| `lib/plan.mjs` | Resolves layers, vars, roles, skills into a plan. |
-| `lib/reconcile.mjs` | Compares the plan with a project; writes files and `.ai-flow.lock.json`. |
-| `lib/skills.mjs` | `skills` subcommands (delegates to the `skills` CLI). |
-| `lib/doctor.mjs` | `doctor` (GitHub checks through `gh`). |
-| `core/` | The layer every project gets. |
-| `presets/<name>/` | Stack layers. `preset.json` `extends` one name or a list; `"mixin": true` marks a layer that only makes sense extended. |
-| `schema/ai-flow.schema.json` | JSON Schema for a project's `.ai-flow.json`. |
+| Path                         | What                                                                                                                    |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `bin/ai-flow.mjs`            | Argument parsing and commands.                                                                                          |
+| `lib/plan.mjs`               | Resolves layers, vars, roles, skills into a plan.                                                                       |
+| `lib/reconcile.mjs`          | Compares the plan with a project; writes files and `.ai-flow.lock.json`.                                                |
+| `lib/skills.mjs`             | `skills` subcommands (delegates to the `skills` CLI).                                                                   |
+| `lib/doctor.mjs`             | `doctor` (GitHub checks through `gh`).                                                                                  |
+| `core/`                      | The layer every project gets.                                                                                           |
+| `presets/<name>/`            | Stack layers. `preset.json` `extends` one name or a list; `"mixin": true` marks a layer that only makes sense extended. |
+| `schema/ai-flow.schema.json` | JSON Schema for a project's `.ai-flow.json`.                                                                            |
 
 ## Adding a preset
 
