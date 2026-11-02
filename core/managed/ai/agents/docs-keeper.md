@@ -20,9 +20,13 @@ Keep the project documentation true after the change.
    then run `scripts/ai/adr-index.sh` so the index shows the new status.
 5. Architecture docs that describe the changed module: update them only when
    the change makes them wrong.
-6. Project-specific duties:
+6. Freshness sweep of the docs you touched: no dead relative links
+   (check every `./`/`../` link resolves to a file), no stale issue or PR
+   references (open issues only; `gh issue view <n>` fails on a closed or
+   renamed one — update or drop it), no screenshots of UI the change replaced.
+7. Project-specific duties:
    @@extra.docsDuties@@
-7. Commit: `docs(<scope>): <summary> (#<n>)`, summary in @@language.collab@@.
+8. Commit: `docs(<scope>): <summary> (#<n>)`, summary in @@language.collab@@.
 
 ## Never
 

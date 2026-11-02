@@ -69,4 +69,7 @@ collide on the git index.
 
 PR URL, commits, tests run, review rounds and findings left open, issues filed,
 `HUMAN AUDIT REQUIRED` items, and deploy steps the merge needs (functions,
-backfills, migrations). Restate the E2E policy: @@testing.e2ePolicy@@
+backfills, migrations). Add the post-merge loop from the plan: the rollout
+stage to flip next (and who flips it), and the production evidence to verify —
+which metric or alert, where it is read, what value means success, and when to
+check. Restate the E2E policy: @@testing.e2ePolicy@@

@@ -64,5 +64,11 @@
 		"model": "haiku",
 		"tools": ["Bash", "Read", "Grep", "Glob"],
 		"description": "Step 9 of the issue cycle. Files bugs found outside the current task as separate GitHub issues after a duplicate search, or comments new evidence on an existing one. Never fixes them."
+	},
+	{
+		"name": "postmortem-writer",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
+		"description": "Outside the issue cycle, after a production incident. Reconstructs the timeline from logs and PRs, writes a blameless postmortem (root cause, contributing factors, detection and resolution gaps) to docs/postmortems/, files the action items as owned issues, and adds a runbook entry to docs/runbooks/ when one would have shortened the incident. Never fixes code."
 	}
 ]
