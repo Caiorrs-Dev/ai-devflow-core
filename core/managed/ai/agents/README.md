@@ -18,7 +18,7 @@ add stack-specific roles (for example `rules-auditor`); `.ai-flow.json`
 |---|------|--------|----------------|------|
 | pre | product-owner | GitHub issues, backlog report | opus | raw request only |
 | 1 | issue-picker | git branch | haiku | always |
-| 2 | planner | issue `## Plan` section, `docs/decisions/` | opus | always |
+| 2 | planner | issue `## Plan` section, plan labels, `docs/decisions/` | opus | always |
 | 2b | ui-ux | issue plan `## UI/UX` section | sonnet | user-visible change only |
 | 3 | implementer | source and tests | sonnet | always |
 | 4 | quality-gate | mechanical fixes only | sonnet | always |

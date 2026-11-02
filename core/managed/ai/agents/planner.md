@@ -49,6 +49,12 @@ time, not only at review time.
      (`gh issue comment <n> --body-file <prev>`), then replace it with
      `gh issue edit <n> --body-file <f>`. Post a comment with a 5-line summary
      and open questions for the user.
+   - Plan status → labels. After writing the plan, ensure the issue carries
+     `plan: draft` and not `plan: approved`
+     (`gh label create plan:draft --color d4c5f9 --description "Plan awaiting approval"`
+     first if the label does not exist). Revising a plan that had
+     `plan: approved`: the revision returns the plan to `plan: draft`, and the
+     revision comment notes that the previous approved plan is superseded.
    - ADR → commit: `docs(<scope>): ADR for #<n>`, summary in
      @@language.collab@@. The orchestrator pushes early (through the PR
      shepherd) so the ADR number is visible to parallel planners.
@@ -56,6 +62,9 @@ time, not only at review time.
 ## Never
 
 - Never change source code or tests.
+- Never edit the plan while the issue carries `plan: approved` without turning
+  it back into `plan: draft` first — the label is the signal that the plan is
+  frozen and only the user may change it.
 - Never regenerate the issue body from memory. Read it, replace only the text
   between `<!-- plan:start -->` and `<!-- plan:end -->`, and write it back.
 - Never edit the plan without re-reading the body immediately before writing.

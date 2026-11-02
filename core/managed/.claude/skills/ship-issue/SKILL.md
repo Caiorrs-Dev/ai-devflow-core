@@ -25,7 +25,10 @@ or a second `status: failed` from the same step.
 2. **planner** — writes the plan into the issue's `## Plan` section (and posts
    a summary comment); then show the user that plan and the open questions, and
    wait for approval. Skip the wait only with `--no-plan-gate` or when the
-   planner returns `plan: not needed`. When the planner wrote an ADR, ask the
+   planner returns `plan: not needed`. On approval, put `plan: approved` on the
+   issue (create the label first if it does not exist) and remove
+   `plan: draft`; that label is what tells every other session the plan is
+   frozen. When the planner wrote an ADR, ask the
    **pr-shepherd** for an early push of the branch so parallel planners see the
    ADR number.
 3. **ui-ux** — only when the change has a user-visible surface; skip otherwise.
@@ -46,9 +49,15 @@ or a second `status: failed` from the same step.
     all handoffs. Skip when the list is empty.
 
 **Issue gate:** every run needs an open issue. When the input has no issue
-number and no backlog entry, run **product-owner** first to file one. Never
-start implementation without an issue number — it is the record every role
-anchors to.
+number:
+- a **raw request** (feature idea, feedback, a "should we add…") goes to
+  **product-owner** first, which frames and files it;
+- a **concrete task** (a specific fix or change the user already described) is
+  filed by **issue-picker** as a minimal issue — one-line title, a few lines of
+  what/why/verify — with no product-owner framing.
+
+Never start implementation without an issue number — it is the record every
+role anchors to.
 
 Run roles one at a time: they commit to the same branch, and parallel commits
 collide on the git index.

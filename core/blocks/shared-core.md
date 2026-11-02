@@ -7,10 +7,13 @@
   none. The issue is the record every step anchors to.
 - Plan before code. Every non-trivial change gets a plan written into the
   issue's `## Plan` section before coding (a revision is recorded as a
-  comment). Every decision with a trade-off gets an ADR in `docs/decisions/`,
-  numbered with `scripts/ai/next-adr-number.sh` and indexed with
-  `scripts/ai/adr-index.sh`. Supersede an ADR; never delete it. Link the issue
-  (its plan) and the ADR from the PR.
+  comment), tracked with labels: `plan: draft` while it is being written,
+  `plan: approved` once the user approves (then the plan is frozen — changing
+  it returns the plan to draft), `plan: superseded` when a later plan replaces
+  an approved one. Every decision with a trade-off gets an ADR in
+  `docs/decisions/`, numbered with `scripts/ai/next-adr-number.sh` and indexed
+  with `scripts/ai/adr-index.sh`. Supersede an ADR; never delete it. Link the
+  issue (its plan) and the ADR from the PR.
 - Apply the code-quality bar at design time, not only in review: abstraction
   boundaries, condition growth, duplication, the simplest structure that works.
 - Branch from `@@branches.integration@@` as `<type>/issue-<n>`. PRs target

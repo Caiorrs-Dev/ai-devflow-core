@@ -24,9 +24,10 @@ order by reading its brief.
 9. **File unrelated bugs** (`bug-filer`) as separate issues. Never fix them in
    this branch.
 
-Every run needs an open issue. Run `product-owner` when the input is a raw
-request or has no issue number: it files the issue the rest of the cycle
-anchors to. Never start implementation without an issue number.
+Every run needs an open issue. When the input has no issue number, the input
+decides who files it: a raw request goes to `product-owner` (framed issue); a
+concrete task is filed by `issue-picker` as a minimal issue. Never start
+implementation without an issue number.
 
 ## Promoting to `@@branches.production@@`
 
