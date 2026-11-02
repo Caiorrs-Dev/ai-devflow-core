@@ -155,6 +155,10 @@
 						"version": {
 							"description": "Node version installed by the workflows' setup-node step. Default `22`.",
 							"type": "string"
+						},
+						"cacheManager": {
+							"description": "Package-manager cache for the workflows' setup-node step: `npm`, `yarn` or `pnpm`. Default `npm`. Use `yarn`/`pnpm` together with a `commands.install`/`installNoScripts` in that manager; the managed commitlint workflow enables corepack for them.",
+							"type": "string"
 						}
 					}
 				},
