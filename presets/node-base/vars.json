@@ -19,6 +19,7 @@
 		"deadCode": "npm run knip",
 		"mutation": "none.",
 		"securityScan": "none.",
+		"audit": "npm audit --audit-level=high",
 		"extraChecks": "none."
 	},
 	"lint": {
