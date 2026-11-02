@@ -57,4 +57,8 @@ jobs:
         run: |
           ./actionlint
           files="$(git ls-files '*.sh' .husky)"
-          if [ -n "$files" ]; then shellcheck $files; fi
+          if [ -n "$files" ]; then
+            # word splitting on $files is the point: one shellcheck per file
+            # shellcheck disable=SC2086
+            shellcheck $files
+          fi
