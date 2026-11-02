@@ -4,6 +4,23 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.7.0...v0.8.0) (2026-11-02)
+
+
+### Features
+
+* CI-verification upgrades — security scan workflow, opt-in e2e/a11y/perf gates ([#41](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/41)) ([#66](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/66)) ([966031e](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/966031e55e8af1322a639c8b2d799d8bc1f9b5f5))
+* CI/CD upgrades — pipeline lint for consumers, previews, env separation, deploy gate ([#45](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/45)) ([#70](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/70)) ([faeebef](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/faeebef070c8174ebad2e212d764e51fef35193d))
+* ideation-stage upgrades — spec-writer, RICE backlog, definition-of-ready, feature flags ([#38](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/38)) ([#63](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/63)) ([f2dfc8f](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/f2dfc8fb140d7799c6919a2ed98c5b07431b19e8))
+* meta upgrades — done-claims, scope guard, human gates, cost, brief evals ([#43](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/43)) ([#68](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/68)) ([1805727](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/180572712b66ad088a5efc67cb69bcbe47cd7796))
+* plan status labels, minimal-issue fast path, plan-guarantee decision ([#34](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/34) [#35](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/35) [#36](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/36)) ([#62](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/62)) ([c3253e5](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/c3253e5533dad8d60713affedee92323b25b6e1f))
+* planning-stage upgrades — edge-case checklist, migration design, contract guards ([#39](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/39)) ([#64](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/64)) ([88c3901](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/88c390117cfbe413a5edf45a21cfc1a5901d534c))
+* post-merge loop — production evidence, rollout stages, release notes, postmortems, docs freshness ([#42](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/42)) ([#67](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/67)) ([59c921e](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/59c921e7c051e8254526c09c161ce7f026c14b24))
+* render the workflow install step from commands.install vars ([#15](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/15)) ([#58](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/58)) ([7dbe537](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/7dbe537acf1950aeecb871c5db57edc0e1ab47e0))
+* run ai-flow check --strict in consumers' CI ([#20](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/20)) ([#61](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/61)) ([4c50819](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/4c508198214a9845d5d1ed603542897173c14bfd))
+* security upgrades — threat modeler, dependency review, agent-surface hardening ([#44](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/44)) ([#69](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/69)) ([6ec4dd2](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/6ec4dd2b3b790b9e308b7996141a14ced2d1f1d8))
+* test-quality upgrades — coverage runs, mutation hook, property tests, scenario mapping ([#40](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/40)) ([#65](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/65)) ([e74bb6e](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/e74bb6e75e2f29ade8b56fac18f77917844d676c))
+
 ## [0.7.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.6.0...v0.7.0) (2026-11-02)
 
 
