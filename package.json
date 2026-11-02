@@ -1,6 +1,6 @@
 {
 	"name": "ai-devflow-core",
-	"version": "0.8.4",
+	"version": "0.8.5",
 	"private": true,
 	"description": "Shared AI development cycle (role briefs, ship-issue orchestrator, plan/ADR templates, gitflow and release workflows) synced into project repositories.",
 	"license": "MIT",

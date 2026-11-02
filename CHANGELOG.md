@@ -4,6 +4,14 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.5](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.4...v0.8.5) (2026-11-02)
+
+
+### Bug Fixes
+
+* https npm spec, style-free pipeline lint, per-manager audit ([#44](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/44) [#45](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/45)) ([#83](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/83)) ([e5a9848](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/e5a9848b2dee75ff82c7e891827a27fe6e0b2992))
+* skip husky's .husky/_ shim directory in the localFiles walk ([#80](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/80)) ([5a03745](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/5a03745bda94bfbf10833c6a0d5fdfbd2b8d0ab9))
+
 ## [0.8.4](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.3...v0.8.4) (2026-11-02)
 
 
