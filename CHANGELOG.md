@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.7.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.6.0...v0.7.0) (2026-11-02)
+
+
+### Features
+
+* **egm:** add opt-in egm mixin and project-level extends ([#55](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/55)) ([dee5bfd](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/dee5bfd1c6f88538359eac3df68eb73912055d01))
+
 ## [0.6.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.5.1...v0.6.0) (2026-11-02)
 
 
