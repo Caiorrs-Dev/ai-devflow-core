@@ -1,6 +1,7 @@
 {
 	"node": {
-		"version": "22"
+		"version": "22",
+		"cacheManager": "npm"
 	},
 	"commands": {
 		"install": "npm ci",
