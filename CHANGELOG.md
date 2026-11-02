@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.1](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.0...v0.8.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* seed directories are not managed directories for localFiles ([#20](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/20)) ([#71](https://github.com/Caiorrs-Dev/ai-devflow-core/issues/71)) ([5939103](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/5939103dfef815d85c6ac13848ba93303752e12e))
+
 ## [0.8.0](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.7.0...v0.8.0) (2026-11-02)
 
 
