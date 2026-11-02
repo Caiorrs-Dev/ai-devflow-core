@@ -31,7 +31,9 @@ refs=("HEAD" "origin/$base")
 if command -v gh >/dev/null 2>&1; then
 	while IFS= read -r branch; do
 		[[ -n "$branch" ]] && refs+=("origin/$branch")
-	done < <(gh pr list --state open --limit 500 --json headRefName --jq '.[].headRefName' 2>/dev/null || true)
+	# --paginate, not --limit: a fixed cap silently stops seeing PRs past it and
+	# two parallel planners can then pick the same number.
+	done < <(gh api --paginate "repos/{owner}/{repo}/pulls?state=open&per_page=100" --jq '.[].head.ref' 2>/dev/null || true)
 fi
 
 for ref in "${refs[@]}"; do
