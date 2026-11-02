@@ -53,6 +53,8 @@ describe("init", () => {
 				".claude/skills/ship-issue/SKILL.md",
 				".github/workflows/back-merge.yml",
 				"docs/decisions/_template.md",
+				"FEATURES.md",
+				"docs/backlog-priority-report.md",
 				"scripts/ai/adr-index.sh",
 				"CLAUDE.md",
 				".ai-flow.lock.json",
