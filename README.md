@@ -183,9 +183,12 @@ through the CLI.
 ```
 
 - `vars` override any preset var. `ai-flow vars` prints the resolved set.
-  Multi-line values placed alone on an indented line keep that indentation;
-  arrays render as JSON. `project.name` and `project.version` come from
-  `package.json`, and `release.packageName` defaults to the name.
+  Every key (with its default) is documented in
+  [`schema/ai-flow.schema.json`](./schema/ai-flow.schema.json), so editors
+  autocomplete them. Multi-line values placed alone on an indented line keep
+  that indentation; arrays render as JSON. `project.name` and
+  `project.version` come from `package.json`, and `release.packageName`
+  defaults to the name.
 - `extends` layers one or more mixins after the preset, in order. Only mixins
   are accepted (`ai-flow presets` marks them); a mixin cannot be the `preset`
   itself. `ai-flow roles` and `ai-flow skills` show the resolved result.
