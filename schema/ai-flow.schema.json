@@ -68,7 +68,7 @@
 					}
 				},
 				"commands": {
-					"description": "Commands rendered into workflow `run:` steps. Must match the package manager the workflows install with (`check` warns on a mismatch).",
+					"description": "Commands rendered into workflow `run:` steps and role briefs. Must match the package manager the workflows install with (`check` warns on a mismatch). Defaults come from the preset's vars.json (node-base unless the preset overrides).",
 					"type": "object",
 					"properties": {
 						"install": {
@@ -77,6 +77,147 @@
 						},
 						"installNoScripts": {
 							"description": "Install step of the managed commitlint workflow (scripts skipped for speed and safety). Default `npm ci --ignore-scripts`.",
+							"type": "string"
+						},
+						"lintFix": {
+							"description": "Auto-fix lint issues locally. Default `npm run lint:fix`.",
+							"type": "string"
+						},
+						"format": {
+							"description": "Format the files. Default `npm run format`.",
+							"type": "string"
+						},
+						"lint": {
+							"description": "Lint check run by the reviewer and quality gate. Default `npm run lint -- --diagnostic-level=error`.",
+							"type": "string"
+						},
+						"typecheck": {
+							"description": "Type check. Default `npx tsc --noEmit` (node-ts: `npx tsc -b`).",
+							"type": "string"
+						},
+						"test": {
+							"description": "Full test suite, run by the CI test workflow. Default `npm test` (node-ts: `npx vitest run --reporter=dot`; react-native-firebase adds `-- --silent`).",
+							"type": "string"
+						},
+						"testFiles": {
+							"description": "Test suite scoped to paths; the literal placeholder `<paths>` is replaced per run. Default `npm test -- <paths>`.",
+							"type": "string"
+						},
+						"testChanged": {
+							"description": "Test suite over the changes since the PR base (node-ts, typescript-vite-firebase). Default `npx vitest run --changed HEAD^1 --passWithNoTests --reporter=dot`.",
+							"type": "string"
+						},
+						"build": {
+							"description": "Build check run by the build-check workflow. Default `npx tsc --noEmit` (node-ts: `npm run build`).",
+							"type": "string"
+						},
+						"deadCode": {
+							"description": "Dead-code check run by the build-check workflow. Default `npm run knip`.",
+							"type": "string"
+						},
+						"extraChecks": {
+							"description": "Extra verification prose injected into the quality-gate role. Default `none.`; the firebase mixin adds a functions build check.",
+							"type": "string"
+						},
+						"testRules": {
+							"description": "Firestore/storage rules test suite (firebase mixin). Default `npm run test:rules`.",
+							"type": "string"
+						}
+					}
+				},
+				"node": {
+					"type": "object",
+					"properties": {
+						"version": {
+							"description": "Node version installed by the workflows' setup-node step. Default `22`.",
+							"type": "string"
+						}
+					}
+				},
+				"ci": {
+					"type": "object",
+					"properties": {
+						"unitPaths": {
+							"description": "Globs (as a YAML list in a string) that trigger the unit-test workflow. Defaults to the preset's source and config paths.",
+							"type": "string"
+						},
+						"rulesPaths": {
+							"description": "Globs that trigger the firebase rules test workflow (firebase mixin).",
+							"type": "string"
+						}
+					}
+				},
+				"lint": {
+					"type": "object",
+					"properties": {
+						"includes": {
+							"description": "Globs linted by Biome, rendered into `biome.json`. Defaults to the preset's source paths.",
+							"type": "array",
+							"items": { "type": "string" }
+						}
+					}
+				},
+				"knip": {
+					"type": "object",
+					"properties": {
+						"entry": {
+							"description": "Entry files for Knip, rendered into `knip.json`. Defaults to the preset's entry points.",
+							"type": "array",
+							"items": { "type": "string" }
+						}
+					}
+				},
+				"biome": {
+					"type": "object",
+					"properties": {
+						"version": {
+							"description": "Biome version pinned in `biome.json`'s `$schema`. Default `2.5.15`.",
+							"type": "string"
+						}
+					}
+				},
+				"ux": {
+					"description": "UI-auditor inputs (react-native-firebase and typescript-vite-firebase).",
+					"type": "object",
+					"properties": {
+						"priorityList": {
+							"description": "Markdown file ranking screens for the UI audit. Default `docs/ux/screens-audit-priority.md`.",
+							"type": "string"
+						},
+						"reportDir": {
+							"description": "Directory where UI-audit reports are written. Default `docs/ux`.",
+							"type": "string"
+						},
+						"safeArea": {
+							"description": "Prose naming the app's safe-area wrapper, injected into the UI-auditor brief.",
+							"type": "string"
+						}
+					}
+				},
+				"testing": {
+					"type": "object",
+					"properties": {
+						"e2ePolicy": {
+							"description": "Prose policy for E2E tests, injected into the role briefs. Default `Never run E2E tests. The user runs them manually.`",
+							"type": "string"
+						}
+					}
+				},
+				"review": {
+					"type": "object",
+					"properties": {
+						"skillPath": {
+							"description": "Path of the review skill the reviewer role loads. Default `.agents/skills/thermo-nuclear-code-quality-review/SKILL.md`.",
+							"type": "string"
+						}
+					}
+				},
+				"egm": {
+					"description": "EGM mixin inputs.",
+					"type": "object",
+					"properties": {
+						"docsDir": {
+							"description": "Directory of EGM design documents. Default `docs/designs`.",
 							"type": "string"
 						}
 					}
