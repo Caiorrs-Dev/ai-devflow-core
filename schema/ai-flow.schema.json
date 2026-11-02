@@ -122,6 +122,14 @@
 						"testRules": {
 							"description": "Firestore/storage rules test suite (firebase mixin). Default `npm run test:rules`.",
 							"type": "string"
+						},
+						"testCoverage": {
+							"description": "Full test run with coverage, used by the Unit Tests workflow on integration/production pushes (node-ts, react-native-firebase). Default `npx vitest run --coverage --reporter=dot` (node-ts) or `npx jest --coverage --silent`.",
+							"type": "string"
+						},
+						"mutation": {
+							"description": "Mutation-testing command run on the changed files when a review doubts the tests catch a regression. Default `none.` (no mutation testing).",
+							"type": "string"
 						}
 					}
 				},
@@ -199,6 +207,10 @@
 					"properties": {
 						"e2ePolicy": {
 							"description": "Prose policy for E2E tests, injected into the role briefs. Default `Never run E2E tests. The user runs them manually.`",
+							"type": "string"
+						},
+						"coverageFloor": {
+							"description": "Prose coverage floor the reviewer holds the PR to. Default `no explicit floor yet: every new line of logic ships with a test, and coverage must not drop.`",
 							"type": "string"
 						}
 					}

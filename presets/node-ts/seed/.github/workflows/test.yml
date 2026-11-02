@@ -70,12 +70,12 @@ jobs:
       # Add a step here that writes dummy env values (for example VITE_* to
       # .env.local) when the app reads them at import time.
 
-      - name: Run unit tests
+      - name: Run unit tests (coverage on integration)
         env:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             @@commands.testChanged@@
           else
-            @@commands.test@@
+            @@commands.testCoverage@@
           fi

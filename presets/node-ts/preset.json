@@ -3,7 +3,7 @@
 	"description": "Node + TypeScript with Vitest, on top of node-base (Biome 2, Knip, Husky, commitlint, release-please, stage/main gitflow).",
 	"requires": {
 		"packageScripts": ["build"],
-		"devDependencies": ["vitest"],
+		"devDependencies": ["vitest", "@vitest/coverage-v8"],
 		"checks": ["Unit Tests"]
 	}
 }

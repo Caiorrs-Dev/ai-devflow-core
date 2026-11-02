@@ -12,7 +12,8 @@
 		"features": "FEATURES.md"
 	},
 	"testing": {
-		"e2ePolicy": "Never run E2E tests. The user runs them manually."
+		"e2ePolicy": "Never run E2E tests. The user runs them manually.",
+		"coverageFloor": "no explicit floor yet: every new line of logic ships with a test, and coverage must not drop." 
 	},
 	"review": {
 		"skillPath": ".agents/skills/thermo-nuclear-code-quality-review/SKILL.md"

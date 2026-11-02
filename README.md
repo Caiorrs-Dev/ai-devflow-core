@@ -45,7 +45,7 @@ and verify it with `ai-flow doctor`.
 | Preset                     | Extends               | Adds                                                                                       |
 | -------------------------- | --------------------- | ------------------------------------------------------------------------------------------ |
 | `node-base`                | —                     | Biome, Knip, Husky, commitlint, release-please, gitflow workflows, Dependabot; no test runner |
-| `node-ts`                  | `node-base`           | Vitest, the `Unit Tests` workflow                                                          |
+| `node-ts`                  | `node-base`           | Vitest and `@vitest/coverage-v8`, the `Unit Tests` workflow (coverage on integration pushes) |
 | `typescript-vite-firebase` | `node-ts`, `firebase` | `ui-auditor` role, a11y/tokens/analytics/sitemap duties                                    |
 | `react-native-firebase`    | `node-base`, `firebase` | Jest and its `Unit Tests` workflow, `ui-auditor` role, safe areas and mobile tokens      |
 

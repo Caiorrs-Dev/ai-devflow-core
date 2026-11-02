@@ -4,6 +4,7 @@
 		"build": "npm run build",
 		"test": "npx vitest run --reporter=dot",
 		"testFiles": "npx vitest run --reporter=dot <paths>",
+		"testCoverage": "npx vitest run --coverage --reporter=dot",
 		"testChanged": "npx vitest run --changed HEAD^1 --passWithNoTests --reporter=dot"
 	},
 	"ci": {
