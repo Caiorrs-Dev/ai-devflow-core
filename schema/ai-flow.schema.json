@@ -14,6 +14,14 @@
 			"pattern": "^[a-z0-9][a-z0-9-]*$",
 			"examples": ["node-base", "node-ts", "typescript-vite-firebase", "react-native-firebase"]
 		},
+		"extends": {
+			"description": "Mixin(s) layered after the preset. `ai-flow presets` lists the mixins; a mixin cannot be the preset itself.",
+			"oneOf": [
+				{ "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+				{ "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }, "uniqueItems": true }
+			],
+			"examples": ["egm", ["firebase", "egm"]]
+		},
 		"vars": {
 			"description": "Overrides for template vars, deep-merged over the preset. `ai-flow vars` prints the resolved set.",
 			"type": "object",

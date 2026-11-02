@@ -1,0 +1,56 @@
+[
+	{
+		"name": "egm-zoom-out",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. High-altitude skeptic: YAGNI, simplicity, reuse of what already exists, and premature detail. Read-only; reports findings, never edits."
+	},
+	{
+		"name": "egm-comprehension",
+		"model": "sonnet",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. Naive reader with zero institutional knowledge: flags undefined terms, unlinked concepts, assumed prerequisites and vague explanations. Read-only."
+	},
+	{
+		"name": "egm-design",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. Hostile design critic: architecture, scalability, cost and quota economics, unbacked assumptions and unmitigated risks. Read-only."
+	},
+	{
+		"name": "egm-structural",
+		"model": "sonnet",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. Document architect: heading hierarchy, symmetry, template compliance and formatting. Read-only."
+	},
+	{
+		"name": "egm-style",
+		"model": "sonnet",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. Technical copy editor: clarity, precision, brevity, objective framing, fluff removal. Read-only."
+	},
+	{
+		"name": "egm-implementation-readiness",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. Pragmatic tech lead: is the plan executable without leaving design decisions to the implementer? Read-only."
+	},
+	{
+		"name": "egm-codebase-details",
+		"model": "opus",
+		"tools": ["Bash", "Read", "Grep", "Glob"],
+		"description": "EGM Goldfish reviewer. Pedantic auditor: does the document match the real code, and does it reuse what the codebase already has? Read-only."
+	},
+	{
+		"name": "egm-synthesizer",
+		"model": "sonnet",
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
+		"description": "EGM swarm compiler. Deduplicates Goldfish findings, groups by severity, normalizes file:line references and writes the consolidated report. Never edits source."
+	},
+	{
+		"name": "egm-bootstrap-orchestrator",
+		"model": "sonnet",
+		"tools": ["Bash", "Read", "Grep", "Glob", "Write", "Edit"],
+		"description": "EGM bootstrap orchestrator. Partitions a repository subtree, dispatches README workers and consolidates their output. Writes documentation only."
+	}
+]

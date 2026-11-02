@@ -1,0 +1,4 @@
+{
+	"mixin": true,
+	"description": "Elephant-Goldfish Model (EGM): spec-first drafting plus stateless adversarial review. Installs the 7 upstream EGM skills and 9 reviewer roles. Extend it from a stack preset."
+}
