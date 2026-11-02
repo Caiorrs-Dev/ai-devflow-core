@@ -48,6 +48,10 @@ at the end with every out-of-scope bug collected from the handoffs.
   lines.
 - Other sessions can commit to the same branch. Re-read files before editing;
   never trust an old snapshot.
+- The issue body is shared state. When a role edits the `## Plan` section, read
+  the body first and replace only what is between `<!-- plan:start -->` and
+  `<!-- plan:end -->`; everything outside the markers is preserved byte for
+  byte. Never regenerate the whole body.
 - Language: commits, PR titles and bodies, issues, review comments and test
   labels in @@language.collab@@; plans, ADRs and code comments in
   @@language.docs@@.
