@@ -344,10 +344,13 @@ describe("sync and check", () => {
 	it("honors a commands.install override (seeds render at init)", () => {
 		// Seeds are written once, so the override applies at init; an existing
 		// project re-inits or hand-edits its seed workflows.
-		write(".ai-flow.json", JSON.stringify({
-			preset: "node-ts",
-			vars: { commands: { install: "npm install" } },
-		}));
+		write(
+			".ai-flow.json",
+			JSON.stringify({
+				preset: "node-ts",
+				vars: { commands: { install: "npm install" } },
+			}),
+		);
 		assert.equal(run(project, "init", "--preset", "node-ts", "--force").status, 0);
 		assert.match(read(".github/workflows/test.yml"), /run: npm install\n/);
 		assert.doesNotMatch(read(".github/workflows/test.yml"), /npm ci/);
