@@ -24,7 +24,10 @@ describe("doctor", () => {
 			[`api repos/${REPO}/branches/stage`]: { stdout: {} },
 			[`api repos/${REPO}/branches/main`]: { stdout: {} },
 			[`api repos/${REPO}/branches/stage/protection/required_status_checks`]: {
-				stdout: { contexts: ["Build & Type Check", "Commitlint"], checks: [{ context: "Unit Tests" }] },
+				stdout: {
+					contexts: ["Build & Type Check", "Commitlint"],
+					checks: [{ context: "Unit Tests" }, { context: "AI-flow Check" }],
+				},
 			},
 			[`api repos/${REPO}/rules/branches/main`]: {
 				stdout: [
@@ -35,6 +38,7 @@ describe("doctor", () => {
 								{ context: "Build & Type Check" },
 								{ context: "Commitlint" },
 								{ context: "Unit Tests" },
+								{ context: "AI-flow Check" },
 							],
 						},
 					},
@@ -45,7 +49,7 @@ describe("doctor", () => {
 		});
 		const result = run(project, "doctor", { env });
 		assert.equal(result.status, 0, result.stderr);
-		assert.match(result.stdout, /ok: stage requires Build & Type Check, Commitlint, Unit Tests/);
+		assert.match(result.stdout, /ok: stage requires Build & Type Check, Commitlint, AI-flow Check, Unit Tests/);
 		assert.match(result.stdout, /ok: main requires/);
 		assert.match(result.stderr, /warning: secret RELEASE_PLEASE_TOKEN is not set/);
 	});
@@ -59,7 +63,10 @@ describe("doctor", () => {
 		const result = run(project, "doctor", { env });
 		assert.equal(result.status, 1);
 		assert.match(result.stderr, /fail: branch stage does not exist/);
-		assert.match(result.stderr, /fail: main does not require: Build & Type Check, Commitlint, Unit Tests/);
+		assert.match(
+			result.stderr,
+			/fail: main does not require: Build & Type Check, Commitlint, AI-flow Check, Unit Tests/,
+		);
 		assert.match(result.stderr, /cannot list secrets/);
 	});
 

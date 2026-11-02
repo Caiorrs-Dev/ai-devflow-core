@@ -1,0 +1,37 @@
+name: AI-flow Check
+
+# Fails on drift between the project and its ai-devflow-core preset: managed
+# files a release changed, locally edited managed files, missing skills, a
+# stale lock. Run `npx github:Caiorrs-Dev/ai-devflow-core#v<version> sync`
+# locally to fix it. The version is pinned by the last sync, so a core release
+# never fails this workflow until the project syncs.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - @@branches.integration@@
+      - @@branches.production@@
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-flow-check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: AI-flow Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: @@node.version@@
+      - name: Check ai-flow drift
+        run: npx github:Caiorrs-Dev/ai-devflow-core#v@@aiFlow.version@@ check --strict

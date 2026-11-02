@@ -261,6 +261,12 @@
 			"type": "array",
 			"items": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]*$" },
 			"uniqueItems": true
+		},
+		"localFiles": {
+			"description": "Project files kept inside managed directories that ai-flow does not own (one path per entry, project-relative). Anything else in a managed directory is reported as a warning by `check`.",
+			"type": "array",
+			"items": { "type": "string" },
+			"uniqueItems": true
 		}
 	}
 }

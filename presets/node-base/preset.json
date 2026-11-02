@@ -11,7 +11,7 @@
 			"@commitlint/cli",
 			"@commitlint/config-conventional"
 		],
-		"checks": ["Build & Type Check", "Commitlint"],
+		"checks": ["Build & Type Check", "Commitlint", "AI-flow Check"],
 		"secrets": ["BACK_MERGE_TOKEN", "RELEASE_PLEASE_TOKEN"]
 	}
 }
