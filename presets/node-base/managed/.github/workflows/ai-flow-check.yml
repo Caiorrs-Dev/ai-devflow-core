@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: @@node.version@@
       - name: Check ai-flow drift
-        run: npx -y github:Caiorrs-Dev/ai-devflow-core#v@@aiFlow.version@@ check --strict
+        run: npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v@@aiFlow.version@@" check --strict
 
   # The pipeline itself is code: lint the workflows and shell scripts the
   # project ships, so a YAML typo or a hook bug fails here and not on the
@@ -54,8 +54,12 @@ jobs:
           grep "actionlint_${version}_linux_amd64.tar.gz" actionlint_${version}_checksums.txt | sha256sum -c -
           tar -xzf actionlint_${version}_linux_amd64.tar.gz actionlint
       - name: Lint workflows and scripts
+        # -shellcheck= disables actionlint's built-in shellcheck over every
+        # run: block — it floods existing project workflows with style
+        # findings (SC2086 and friends). Our own scripts and hooks are still
+        # shellchecked by the explicit step below.
         run: |
-          ./actionlint
+          ./actionlint -shellcheck=
           files="$(git ls-files '*.sh' .husky)"
           if [ -n "$files" ]; then
             # word splitting on $files is the point: one shellcheck per file

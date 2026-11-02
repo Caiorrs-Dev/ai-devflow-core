@@ -231,7 +231,10 @@ describe("sync and check", () => {
 		run(project, "init", "--preset", "node-ts");
 		const text = read(".github/workflows/ai-flow-check.yml");
 		assert.match(text, /name: AI-flow Check/);
-		assert.match(text, /npx -y github:Caiorrs-Dev\/ai-devflow-core#v\d+\.\d+\.\d+ check --strict/);
+		assert.match(
+			text,
+			/npx -y "git\+https:\/\/github\.com\/Caiorrs-Dev\/ai-devflow-core\.git#v\d+\.\d+\.\d+" check --strict/,
+		);
 		assert.doesNotMatch(text, /@@/);
 	});
 

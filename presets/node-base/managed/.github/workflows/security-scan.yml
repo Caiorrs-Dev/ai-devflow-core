@@ -54,7 +54,7 @@ jobs:
             ./gitleaks detect --no-banner --redact
           fi
       - name: Audit dependencies
-        run: npm audit --audit-level=high
+        run: @@commands.audit@@
 
       # Fails a PR that adds or upgrades a dependency with a known
       # vulnerability, a license the project forbids, or a scorecard drop.
