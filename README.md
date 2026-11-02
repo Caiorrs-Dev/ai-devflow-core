@@ -3,7 +3,7 @@
 The shared AI development cycle, packaged so any repository can adopt it and
 keep it up to date:
 
-- 12 tool-agnostic role briefs (`ai/agents/*.md`) plus preset roles, with a
+- 13 tool-agnostic role briefs (`ai/agents/*.md`) plus preset roles, with a
   `HANDOFF` contract between them;
 - the `ship-issue` orchestrator skill for Claude Code, and generated
   `.claude/agents/*.md` subagent wrappers;
@@ -260,7 +260,11 @@ GitHub side. For `node-ts`:
 5. Secrets:
    - `BACK_MERGE_TOKEN`: a fine-grained PAT or GitHub App token with contents
      write that may bypass the `stage` protection. Without it the back-merge
-     can push only to an unprotected `stage`.
+     can push only to an unprotected `stage`. Least privilege for an agent
+     token: scope it to **this repository only**, contents read+write (and
+     nothing else), the shortest expiry your rotation allows, and rotate it
+     on a schedule — the token bypasses branch protection by design, so its
+     scope is the blast radius.
    - `RELEASE_PLEASE_TOKEN` (recommended): contents and pull-requests write.
      With the default `GITHUB_TOKEN`, release PRs run no CI, so their required
      checks never report, and the release job fails unless **Settings >

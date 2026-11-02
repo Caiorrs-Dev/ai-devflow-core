@@ -30,6 +30,12 @@ add stack-specific roles (for example `rules-auditor`); `.ai-flow.json`
 | 9 | bug-filer | GitHub issues only | haiku | when bugs were collected |
 | audit | ui-auditor | UX audit reports, craft fixes | sonnet | preset role, on demand |
 | post | postmortem-writer | blameless postmortem, action items, runbooks | opus | after a production incident |
+| audit | threat-modeler | `## Threat model` section, mitigation issues | opus | sensitive change only (auth, payments, PII, admin, keys) |
+
+Tool access is enforced twice: the Claude Code wrapper grants only the tools
+in `roles.json` (the reviewer's wrapper has no Edit/Write), and the brief's
+Never list is the second wall — `Bash` can do almost anything, so the brief,
+not the tool list alone, is what a sensitive action answers to.
 
 After step 8, review findings go back to the implementer (3), then the quality
 gate (4), then the PR shepherd (7) pushes the fixes. The bug filer (9) runs once

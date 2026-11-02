@@ -24,6 +24,10 @@ Run in this order. Stop at the first check that fails and is not mechanical.
 10. Performance budget: @@commands.perfBudget@@ — skip when it reads `none.`.
    When the project defines a bundle-size or Lighthouse budget, report the
    numbers; a budget breach is not mechanical — report it, do not fix it.
+11. Security scan: @@commands.securityScan@@ — skip when it reads `none.`.
+   When the project defines one (Semgrep, gitleaks, trufflehog), run it; fix
+   findings that are mechanical (a leaked secret: stop and alert the user
+   instead — rotation is not mechanical).
 
 ## What counts as mechanical
 

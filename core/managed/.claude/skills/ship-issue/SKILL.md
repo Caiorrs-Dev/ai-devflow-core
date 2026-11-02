@@ -33,6 +33,10 @@ or a second `status: failed` from the same step.
    ADR number.
 3. **ui-ux** — only when the change has a user-visible surface; skip otherwise.
    It appends a `## UI/UX` section to the approved plan for the implementer.
+3b. **threat-modeler** — only when the plan touches authentication, payments,
+   PII, admin surfaces or keys; skip otherwise. It appends a `## Threat
+   model` section (STRIDE per component) to the issue's plan, with the
+   mitigations as plan steps or filed issues.
 4. **implementer** — with the approved plan.
 5. **quality-gate** — on `failed`, send its error to the implementer, then run
    the gate again. Two failures in a row: stop and ask the user.

@@ -41,3 +41,9 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Audit dependencies
         run: npm audit --audit-level=high
+
+      # Fails a PR that adds or upgrades a dependency with a known
+      # vulnerability, a license the project forbids, or a scorecard drop.
+      - name: Review dependency changes
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
