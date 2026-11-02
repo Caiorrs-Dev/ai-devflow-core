@@ -189,7 +189,10 @@ describe("sync and check", () => {
 		write("ai/agents/planner.md", "edited");
 		const check = run(project, "check");
 		assert.equal(check.status, 1);
-		assert.match(check.stdout, /edited locally: ai\/agents\/planner\.md/);
+		assert.match(
+			check.stdout,
+			/edited locally: ai\/agents\/planner\.md \(source core\/managed\/ai\/agents\/planner\.md\); managed by ai-devflow-core, so port the change to the preset's/,
+		);
 
 		run(project, "sync");
 		assert.match(read("ai/agents/planner.md"), /# Role: planner/);
@@ -200,7 +203,36 @@ describe("sync and check", () => {
 		const state = lock();
 		state.files["ai/agents/README.md"].sha256 = createHash("sha256").update(old).digest("hex");
 		write(".ai-flow.lock.json", JSON.stringify(state));
-		assert.match(run(project, "check").stdout, /outdated: ai\/agents\/README\.md/);
+		assert.match(
+			run(project, "check").stdout,
+			/outdated: ai\/agents\/README\.md \(source core\/managed\/ai\/agents\/README\.md\); run ai-flow sync/,
+		);
+	});
+
+	it("warns about unmanaged files in managed directories and honors localFiles", () => {
+		run(project, "init", "--preset", "node-ts");
+		write(".claude/agents/argent-inspector.md", "local agent\n");
+		let result = run(project, "check");
+		assert.match(result.stderr, /unmanaged file in a managed directory: \.claude\/agents\/argent-inspector\.md/);
+
+		const config = JSON.parse(read(".ai-flow.json"));
+		config.localFiles = [".claude/agents/argent-inspector.md"];
+		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
+		result = run(project, "check");
+		assert.doesNotMatch(result.stderr, /argent-inspector/);
+
+		// A allow-list entry that is not a real local file is a warning.
+		config.localFiles = [".claude/agents/argent-inspector.md", ".claude/agents/ghost.md"];
+		write(".ai-flow.json", `${JSON.stringify(config, null, "	")}\n`);
+		assert.match(run(project, "check").stderr, /localFiles: "\.claude\/agents\/ghost\.md" does not exist\./);
+	});
+
+	it("seeds the AI-flow Check workflow pinned to the syncing version", () => {
+		run(project, "init", "--preset", "node-ts");
+		const text = read(".github/workflows/ai-flow-check.yml");
+		assert.match(text, /name: AI-flow Check/);
+		assert.match(text, /npx github:Caiorrs-Dev\/ai-devflow-core#v\d+\.\d+\.\d+ check --strict/);
+		assert.doesNotMatch(text, /@@/);
 	});
 
 	it("never overwrites seeds or the project section of CLAUDE.md", () => {

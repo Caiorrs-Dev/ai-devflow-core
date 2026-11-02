@@ -97,6 +97,7 @@ file's hash, so the CLI can:
 ai-flow init --preset <name>     # write .ai-flow.json, then sync (--force changes the preset)
 ai-flow sync [--dry-run]         # apply the plan
 ai-flow check [--strict] [--json]  # exit 1 on drift; --strict also on warnings
+                                  # --json prints the report as JSON (drift, warnings, diffs)
 ai-flow diff                     # unified diff of what sync would change
 ai-flow doctor                   # GitHub setup: branches, required checks, merge methods, secrets
 ai-flow presets | roles | vars   # inspect
@@ -208,6 +209,10 @@ through the CLI.
   prefix, a code index, MCP tools) to every role. The defaults name no tool.
 - `disabledRoles` leaves a role's brief and wrapper out; `disabledFiles` leaves
   any managed file or seed out. Managed files synced before are removed.
+- `localFiles` lists project files that live in a managed directory but are not
+  owned by ai-flow (for example an additional `.claude/agents/my-agent.md`).
+  Without it, `check` warns about such files because they may collide with a
+  future managed file of the same name.
 - Unknown keys, and names in `disabledRoles`/`disabledFiles`/`disabledSkills`
   that match nothing, produce warnings. The schema gives editors completion and
   is stricter on purpose: it rejects unknown keys, so an editor flags a typo as
@@ -241,7 +246,12 @@ GitHub side. For `node-ts`:
 3. Branches: create `stage` from `main` and push it.
 4. Branch protection or rulesets on `stage` and `main`: require a PR and these
    status checks — **`Build & Type Check`**, **`Commitlint`**, **`Unit
-   Tests`** (plus **`Security Rules Tests`** with the `firebase` mixin).
+   Tests`** (plus **`Security Rules Tests`** with the `firebase` mixin), and
+   **`AI-flow Check`** — a managed workflow that runs
+   `npx github:Caiorrs-Dev/ai-devflow-core#v<version> check --strict` and fails
+   when the project drifts from its preset (outdated or locally edited managed
+   files, missing skills, a stale lock). The pin follows the version that last
+   synced, so a core release never fails it until the project syncs.
    Required checks match **job** names, not workflow names.
 5. Secrets:
    - `BACK_MERGE_TOKEN`: a fine-grained PAT or GitHub App token with contents
