@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import { describe, it } from "node:test";
 import { parseArgs } from "../bin/ai-flow.mjs";
 import { validateConfig } from "../lib/config.mjs";
@@ -172,10 +173,11 @@ describe("project extends", () => {
 
 	it("layers the mixin after the preset chain", () => {
 		const layers = layersFor("node-ts", ["egm"]);
-		const egm = layers.findIndex((dir) => dir.endsWith("/presets/egm"));
-		const nodeTs = layers.findIndex((dir) => dir.endsWith("/presets/node-ts"));
+		const posix = (dir) => dir.replaceAll(path.sep, "/");
+		const egm = layers.findIndex((dir) => posix(dir).endsWith("/presets/egm"));
+		const nodeTs = layers.findIndex((dir) => posix(dir).endsWith("/presets/node-ts"));
 		assert.ok(egm > nodeTs, "egm must come after node-ts");
-		assert.equal(layers.filter((dir) => dir.endsWith("/presets/egm")).length, 1);
+		assert.equal(layers.filter((dir) => posix(dir).endsWith("/presets/egm")).length, 1);
 	});
 });
 
