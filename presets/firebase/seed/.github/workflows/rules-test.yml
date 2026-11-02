@@ -68,7 +68,7 @@ jobs:
           java-version: "21"
 
       - name: Install dependencies
-        run: npm ci
+        run: @@commands.install@@
 
       - name: Run security-rule tests (emulator)
         run: @@commands.testRules@@

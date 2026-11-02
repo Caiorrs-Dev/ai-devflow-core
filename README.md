@@ -190,9 +190,14 @@ through the CLI.
   are accepted (`ai-flow presets` marks them); a mixin cannot be the `preset`
   itself. `ai-flow roles` and `ai-flow skills` show the resolved result.
 - `commands.*` are rendered into the workflows' `run:` steps, so they must use
-  the package manager those workflows install with (`npm` in every shipped
-  preset). A project on yarn/pnpm either matches its commands to the install
-  step or changes the workflow to install with that manager. `check` warns on
+  the package manager those workflows install with. The install steps themselves
+  are also vars: `commands.install` (default `npm ci`) feeds the CI workflows'
+  install step, and `commands.installNoScripts` (default `npm ci --ignore-scripts`)
+  feeds the managed commitlint workflow. Override `commands.install` with
+  `npm install` when the project's lockfile was regenerated on a different npm
+  version or platform and `npm ci` fails on CI. A project on yarn/pnpm either
+  matches its commands (and install step) to that manager or changes the
+  workflows to install with it. `check` warns on
   the mismatch — and a bare `yarn`/`pnpm` needs `corepack enable` on the runner
   once `package.json` declares `packageManager`, or the step fails before the
   script starts.
