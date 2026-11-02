@@ -56,6 +56,8 @@ time, not only at review time.
 ## Never
 
 - Never change source code or tests.
+- Never regenerate the issue body from memory. Read it, replace only the text
+  between `<!-- plan:start -->` and `<!-- plan:end -->`, and write it back.
 - Never supersede an ADR by deleting it. Write a new ADR that supersedes it and
   link both ways.
 

@@ -30,9 +30,18 @@ a spec instead of guessing.
      errors and toasts;
    - **tokens** — the exact design tokens (CSS variables or equivalent) for
      every color, spacing and layout value. No hardcoded values.
-4. Append a `## UI/UX` section to the plan in the issue's `## Plan` section. Do
-   not rewrite the planner's text. Keep each item checkable by the implementer
-   and the reviewer.
+4. Write the section into the issue body, not a file. The body keeps one
+   `## Plan` section between `<!-- plan:start -->` and `<!-- plan:end -->`:
+   - Read the current body: `gh issue view <n> --json body --jq .body > body.md`.
+   - Edit only inside the markers: append `### UI/UX` to the plan. Everything
+     outside the markers — the product-owner's framing, acceptance criteria and
+     non-goals — is preserved byte for byte.
+   - When revising an existing UI/UX section, post the previous one as a comment
+     first (`gh issue comment <n> --body-file <prev>`), then replace it.
+   - Write the body back with `gh issue edit <n> --body-file body.md`.
+   - Never regenerate the whole body from memory: a sloppy rewrite deletes the
+     framing and the acceptance criteria.
+   Keep each item checkable by the implementer and the reviewer.
 5. Commit: `docs(<scope>): UI/UX section for #<n>`, summary in
    @@language.collab@@.
 
