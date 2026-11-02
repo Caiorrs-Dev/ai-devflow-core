@@ -17,6 +17,12 @@ time, not only at review time.
    flow/screen/module, a data-model or API-contract change, a new dependency,
    or an approach that needs agreement. Trivial change: skip to the output with
    `plan: not needed`.
+   Before designing, check the issue is **ready**: every acceptance criterion
+   is testable and complete — for behavior, written as a Gherkin scenario
+   (`Given / When / Then`). A criterion that no test could assert, or a missing
+   one the plan would need, is a definition-of-ready failure: stop with
+   `status: blocked` and send the issue back to the product owner instead of
+   inventing criteria yourself.
 3. If `@@review.skillPath@@` exists, read it and apply its questions to the
    design. Otherwise ask: are the abstraction boundaries right, will a file or
    condition keep growing, is anything duplicated, what is the simplest
@@ -33,6 +39,10 @@ time, not only at review time.
 5. Cover in the plan, when relevant:
    - data model, storage paths and the permission change each needs;
    - public API or contract changes, and who calls them;
+   - **feature flags** — for a user-visible or risky rollout, decide the
+     flag now, not at deploy time: the mechanism the project already has
+     (remote config, env, config file), the flag name and default, what the
+     dark-launch order is, and the plan and trigger for removing it;
    @@extra.plannerTopics@@
 6. For each decision with a trade-off, write an ADR: copy
    `docs/decisions/_template.md` to `docs/decisions/NNNN-<kebab-title>.md`,

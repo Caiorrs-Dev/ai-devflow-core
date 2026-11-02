@@ -16,6 +16,7 @@ add stack-specific roles (for example `rules-auditor`); `.ai-flow.json`
 
 | # | Role | Writes | Model (Claude) | Runs |
 |---|------|--------|----------------|------|
+| pre | spec-writer | `Spec:` issue (use cases, Gherkin ACs, success metric) | opus | feature-sized request only |
 | pre | product-owner | GitHub issues, backlog report | opus | raw request only |
 | 1 | issue-picker | git branch | haiku | always |
 | 2 | planner | issue `## Plan` section, plan labels, `docs/decisions/` | opus | always |

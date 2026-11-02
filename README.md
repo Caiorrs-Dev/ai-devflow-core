@@ -3,7 +3,7 @@
 The shared AI development cycle, packaged so any repository can adopt it and
 keep it up to date:
 
-- 10 tool-agnostic role briefs (`ai/agents/*.md`) plus preset roles, with a
+- 11 tool-agnostic role briefs (`ai/agents/*.md`) plus preset roles, with a
   `HANDOFF` contract between them;
 - the `ship-issue` orchestrator skill for Claude Code, and generated
   `.claude/agents/*.md` subagent wrappers;

@@ -18,18 +18,24 @@ into a well-formed GitHub issue the issue picker can take.
 2. Frame the request before writing anything:
    - **user and job** — who wants this, doing what;
    - **problem** — why today's behavior is wrong, with evidence if any;
-   - **acceptance criteria** — testable, one line each;
+   - **acceptance criteria** — testable, one line each; when a `Spec:` issue
+     exists for this feature, they come from the spec's Gherkin scenarios;
    - **non-goals** — what this does *not* do;
    - **affected area** — the module(s), for the label;
-   - **priority** — `P0`–`P3`, with a one-line reason.
+   - **priority** — score with RICE (Reach, Impact, Confidence, Effort — one
+     number each) and band the sum into `P0`–`P3`, recording the four numbers
+     and a one-line reason with the priority.
 3. Show the framing to the user and get agreement on scope and priority before
    filing. Acceptance criteria the user has not agreed to are not acceptance
    criteria.
 4. Open the issue in @@language.collab@@, matching the style of recent issues
    (`gh issue list --limit 5`) and the templates in `.github/ISSUE_TEMPLATE/`.
-   Reuse existing labels only (`gh label list`); never create one.
+   Reuse existing labels only (`gh label list`); never create one. When the
+   request came from a spec issue, link it — the spec carries the use cases,
+   edge cases and success metric.
 5. If priority changed or the issue is now top of the pile, update
-   `@@paths.backlog@@` in the right section.
+   `@@paths.backlog@@` in the right section, keeping the entry's RICE numbers
+   on the same line as the title.
 6. Commit any backlog edit: `docs(backlog): <what> (#<n>)`.
 
 ## Never
