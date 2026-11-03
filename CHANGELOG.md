@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.9](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.8...v0.8.9) (2026-11-03)
+
+
+### Bug Fixes
+
+* **security-scan:** skip dependency-review-action on private repositories without GHAS ([b958bfc](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/b958bfc945e0d797017ad6026c42d645138fb3ad))
+
 ## [0.8.8](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.7...v0.8.8) (2026-11-03)
 
 
