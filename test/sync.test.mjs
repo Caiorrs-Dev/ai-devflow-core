@@ -233,7 +233,7 @@ describe("sync and check", () => {
 		assert.match(text, /name: AI-flow Check/);
 		assert.match(
 			text,
-			/npx -y "git\+https:\/\/x-access-token:\$\{\{ github\.token \}\}@github\.com\/Caiorrs-Dev\/ai-devflow-core\.git#v\d+\.\d+\.\d+" check --strict/,
+			/npx -y "git\+https:\/\/github\.com\/Caiorrs-Dev\/ai-devflow-core\.git#v\d+\.\d+\.\d+" check --strict/,
 		);
 		assert.doesNotMatch(text, /@@/);
 	});
