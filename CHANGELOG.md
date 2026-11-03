@@ -4,6 +4,13 @@ Release notes from v0.4.0 on are written by release-please from Conventional
 Commits. Earlier versions were tagged by hand; their notes are reconstructed
 from the commit history below.
 
+## [0.8.8](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.7...v0.8.8) (2026-11-03)
+
+
+### Bug Fixes
+
+* public clone url in ai-flow-check and corepack enable before setup-node in commitlint ([3a3501d](https://github.com/Caiorrs-Dev/ai-devflow-core/commit/3a3501d5da875dedb91360a01326b57d83bcb643))
+
 ## [0.8.7](https://github.com/Caiorrs-Dev/ai-devflow-core/compare/v0.8.6...v0.8.7) (2026-11-02)
 
 ### Bug Fixes

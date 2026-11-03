@@ -24,16 +24,16 @@ records what it wrote in `.ai-flow.lock.json`, and reports drift.
 
 ```bash
 # In the project repository (Node 22+):
-npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.7 init --preset node-ts # x-release-please-version
+npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.8 init --preset node-ts # x-release-please-version
 # later, to pull framework updates (bump the tag first):
-npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.7 sync # x-release-please-version
+npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.8 sync # x-release-please-version
 # in CI or before a release, to fail on drift:
-npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.7 check # x-release-please-version
+npx -y "git+https://github.com/Caiorrs-Dev/ai-devflow-core.git#v0.8.8 check # x-release-please-version
 ```
 
 Always pin a tag: an unpinned `check` compares against the latest `main`, so
 every upstream change would fail your CI until you sync. Or add it as a dev
-dependency (`"ai-devflow-core": "github:Caiorrs-Dev/ai-devflow-core#v0.8.7"`) <!-- x-release-please-version -->
+dependency (`"ai-devflow-core": "github:Caiorrs-Dev/ai-devflow-core#v0.8.8"`) <!-- x-release-please-version -->
 and call `npx ai-flow sync`. `check` warns when the lock file was written by
 another version.
 
